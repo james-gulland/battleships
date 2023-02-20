@@ -41,11 +41,11 @@ function init() {
     { name: 'Patrol', size: 2, locations: [] }
   ]
 
-  let tempArr = []
-
   // Global variation for the selected ship size
   // defaulting the first ship to set as the Carrier (largest first!) and vertical
-  let playerShipToSet = destroyer
+  let shipCount = 0
+  let playerReady = false
+  let playerShipToSet = carrier
   let computerShipToSet = submarine
   let shipSelectedSize = playerShips[playerShipToSet].size
   let shipDirection = 'vertical'  // either 'vertical' || 'horizontal'
@@ -68,7 +68,7 @@ function init() {
   const cellCount = rowWidth * colHeight
   const playerCells = []
   const computerCells = []
-
+  let tempArr = []
 
   // ! EVENTS
 
@@ -95,6 +95,150 @@ function init() {
     }
   }
 
+  // randomly generate CPU positions for each ship + update the cpuShips object
+  function createComputerPositions(){
+
+    // looping through the computerShips array and setting random positions for each ship
+    // validation also applied to ensure ships are not already positioned there
+    for (let i = 0; i < computerShips.length; i++){
+
+      // select random shipDirection
+      let randomShipDirection = pickRandomShipDirection()
+
+      // select random starting cell to place ship
+      let randomCell = pickRandomCellNumber()
+
+      // select the size of the ship to position
+      const computerShipSize = computerShips[i].size
+      // console.log('Ship size ->', computerShipSize)
+
+      // validation to ensure space is free
+      let validateWork = validateComputer(computerShipSize, randomCell, randomShipDirection)
+      // console.log(randomCell, randomShipDirection, validateWork)
+
+      while (validateWork === false) {
+        randomShipDirection = pickRandomShipDirection()
+        randomCell = pickRandomCellNumber()
+        validateWork = validateComputer(computerShipSize, randomCell, randomShipDirection)
+        // console.log(randomCell, randomShipDirection, validateWork)
+      }
+
+      // set ships as validated and push all the validated ships to the Computer Ships array
+      pushValidatedComputerShips(i)
+      setValidComputer()
+    }
+  }
+
+  // function that randomly chooses direction of ship (when setting computer ships)
+  function pickRandomShipDirection() {
+    return Math.random() < 0.5 ? 'horizontal' : 'vertical'
+  }
+
+  // function that randomly chooses starting cell of ship (when setting computer ships)
+  function pickRandomCellNumber() {
+    return Math.floor(Math.random() * colHeight * rowWidth)
+  }
+
+  function validateComputer(shipSize, cellIndex, shipDirection){
+
+    // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
+    if (shipDirection === 'vertical') {
+      if (shipSize === 3 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 9)) {
+        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated') && !computerCells[cellIndex + 10].classList.contains('nowValidated')){
+          computerCells[cellIndex].classList.add('validSelection')
+          computerCells[cellIndex - 10].classList.add('validSelection')
+          computerCells[cellIndex + 10].classList.add('validSelection')
+          tempArr = [cellIndex - 10, cellIndex, cellIndex + 10]
+          return true
+        }
+      } else if (shipSize === 4 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
+        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated') && !computerCells[cellIndex + 10].classList.contains('nowValidated') && !computerCells[cellIndex + 20].classList.contains('nowValidated')){
+          computerCells[cellIndex].classList.add('validSelection')
+          computerCells[cellIndex - 10].classList.add('validSelection')
+          computerCells[cellIndex + 10].classList.add('validSelection')
+          computerCells[cellIndex + 20].classList.add('validSelection')
+          tempArr = [cellIndex - 10, cellIndex, cellIndex + 10, cellIndex + 20]
+          return true
+        }
+      } else if (shipSize === 2 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 10)) {
+        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated')) {
+          computerCells[cellIndex].classList.add('validSelection')
+          computerCells[cellIndex - 10].classList.add('validSelection')
+          tempArr = [cellIndex - 10, cellIndex]
+          return true
+        }
+      } else if (shipSize === 5 && (Math.floor(cellIndex / rowWidth) > 1) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
+        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 20].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated') && !computerCells[cellIndex + 10].classList.contains('nowValidated') && !computerCells[cellIndex + 20].classList.contains('nowValidated')) {
+          computerCells[cellIndex].classList.add('validSelection')
+          computerCells[cellIndex - 20].classList.add('validSelection')
+          computerCells[cellIndex - 10].classList.add('validSelection')
+          computerCells[cellIndex + 10].classList.add('validSelection')
+          computerCells[cellIndex + 20].classList.add('validSelection')
+          tempArr = [cellIndex - 20, cellIndex - 10, cellIndex, cellIndex + 10, cellIndex + 20]
+          return true
+        }
+      }
+    } else if (shipDirection === 'horizontal') {
+      if (shipSize === 3 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 9)) {
+        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated') && !computerCells[cellIndex + 1].classList.contains('nowValidated')) {
+          computerCells[cellIndex].classList.add('validSelection')
+          computerCells[cellIndex - 1].classList.add('validSelection')
+          computerCells[cellIndex + 1].classList.add('validSelection')
+          tempArr = [cellIndex - 1, cellIndex, cellIndex + 1]
+          return true
+        }
+      } else if (shipSize === 4 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 8)) {
+        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated') && !computerCells[cellIndex + 1].classList.contains('nowValidated') && !computerCells[cellIndex + 2].classList.contains('nowValidated')){
+          computerCells[cellIndex].classList.add('validSelection')
+          computerCells[cellIndex - 1].classList.add('validSelection')
+          computerCells[cellIndex + 1].classList.add('validSelection')
+          computerCells[cellIndex + 2].classList.add('validSelection')
+          tempArr = [cellIndex - 1, cellIndex, cellIndex + 1, cellIndex + 2]
+          return true
+        }
+      } else if (shipSize === 5 && (Math.floor(cellIndex % rowWidth > 1) && (Math.floor(cellIndex % rowWidth) < 8))) {
+        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 2].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated') && !computerCells[cellIndex + 1].classList.contains('nowValidated') && !computerCells[cellIndex + 2].classList.contains('nowValidated')) {
+          computerCells[cellIndex].classList.add('validSelection')
+          computerCells[cellIndex - 2].classList.add('validSelection')
+          computerCells[cellIndex - 1].classList.add('validSelection')
+          computerCells[cellIndex + 1].classList.add('validSelection')
+          computerCells[cellIndex + 2].classList.add('validSelection')
+          tempArr = [cellIndex - 2, cellIndex - 1, cellIndex, cellIndex + 1, cellIndex + 2]
+          return true
+        }
+      } else if (shipSize === 2 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 10)) {
+        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated')) {
+          computerCells[cellIndex].classList.add('validSelection')
+          computerCells[cellIndex - 1].classList.add('validSelection')
+          tempArr = [cellIndex - 1, cellIndex]
+          return true
+        }
+      }
+    }
+    // if none of the conditions are met, return as false (so needs to check again)
+    return false
+  }
+
+  function setValidComputer(){
+    
+    // loop through computerCells and identify which computerCells are selected and have validSelection class
+    // then add indexs to the ships array
+    computerCells.forEach(cell => {
+      if (cell.classList.contains('validSelection')) {
+        cell.classList.add('nowValidated')
+      }
+    })
+
+    // console.log(computerShips[computerShipToSet])
+  }
+
+  function pushValidatedComputerShips(shipIndex){
+    // push validated locations from temp array into object, and empty the temp array
+    computerShips[shipIndex].locations.push(tempArr)
+    tempArr = []
+    // console.log(computerShips)
+  }
+
   // function that validates whether it is possible for a player to select grid position of selected ship during game setup
   // triggers when hovering over mouse
   // checks whether valid position within the grid (i.e. doesnt go outside of grid) + ensures no overlapping of existing validated ships
@@ -104,63 +248,89 @@ function init() {
     const cellIndex = parseInt(e.target.dataset.index)
     // console.log(cellIndex)
 
-    // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
-    if (shipDirection === 'vertical') {
-      if (shipSelectedSize === 3 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 9)) {
-        if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated') && !playerCells[cellIndex + 10].classList.contains('nowValidated')){
-          playerCells[cellIndex].classList.add('validSelection')
-          playerCells[cellIndex - 10].classList.add('validSelection')
-          playerCells[cellIndex + 10].classList.add('validSelection')
+    if (playerReady !== true){
+      // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
+      if (shipDirection === 'vertical') {
+        if (shipSelectedSize === 3 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 9)) {
+          if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated') && !playerCells[cellIndex + 10].classList.contains('nowValidated')){
+            playerCells[cellIndex].classList.add('validSelection')
+            playerCells[cellIndex - 10].classList.add('validSelection')
+            playerCells[cellIndex + 10].classList.add('validSelection')
+          }
+        } else if (shipSelectedSize === 4 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
+          if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated') && !playerCells[cellIndex + 10].classList.contains('nowValidated') && !playerCells[cellIndex + 20].classList.contains('nowValidated')){
+            playerCells[cellIndex].classList.add('validSelection')
+            playerCells[cellIndex - 10].classList.add('validSelection')
+            playerCells[cellIndex + 10].classList.add('validSelection')
+            playerCells[cellIndex + 20].classList.add('validSelection')
+          }
+        } else if (shipSelectedSize === 2 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 10)) {
+          if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated')) {
+            playerCells[cellIndex].classList.add('validSelection')
+            playerCells[cellIndex - 10].classList.add('validSelection')
+          }
+        } else if (shipSelectedSize === 5 && (Math.floor(cellIndex / rowWidth) > 1) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
+          if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 20].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated') && !playerCells[cellIndex + 10].classList.contains('nowValidated') && !playerCells[cellIndex + 20].classList.contains('nowValidated')) {
+            playerCells[cellIndex].classList.add('validSelection')
+            playerCells[cellIndex - 20].classList.add('validSelection')
+            playerCells[cellIndex - 10].classList.add('validSelection')
+            playerCells[cellIndex + 10].classList.add('validSelection')
+            playerCells[cellIndex + 20].classList.add('validSelection')
+          }
         }
-      } else if (shipSelectedSize === 4 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
-        if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated') && !playerCells[cellIndex + 10].classList.contains('nowValidated') && !playerCells[cellIndex + 20].classList.contains('nowValidated')){
-          playerCells[cellIndex].classList.add('validSelection')
-          playerCells[cellIndex - 10].classList.add('validSelection')
-          playerCells[cellIndex + 10].classList.add('validSelection')
-          playerCells[cellIndex + 20].classList.add('validSelection')
-        }
-      } else if (shipSelectedSize === 2 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 10)) {
-        if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated')) {
-          playerCells[cellIndex].classList.add('validSelection')
-          playerCells[cellIndex - 10].classList.add('validSelection')
-        }
-      } else if (shipSelectedSize === 5 && (Math.floor(cellIndex / rowWidth) > 1) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
-        if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 20].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated') && !playerCells[cellIndex + 10].classList.contains('nowValidated') && !playerCells[cellIndex + 20].classList.contains('nowValidated')) {
-          playerCells[cellIndex].classList.add('validSelection')
-          playerCells[cellIndex - 20].classList.add('validSelection')
-          playerCells[cellIndex - 10].classList.add('validSelection')
-          playerCells[cellIndex + 10].classList.add('validSelection')
-          playerCells[cellIndex + 20].classList.add('validSelection')
+      } else if (shipDirection === 'horizontal') {
+        if (shipSelectedSize === 3 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 9)) {
+          if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated') && !playerCells[cellIndex + 1].classList.contains('nowValidated')) {
+            playerCells[cellIndex].classList.add('validSelection')
+            playerCells[cellIndex - 1].classList.add('validSelection')
+            playerCells[cellIndex + 1].classList.add('validSelection')
+          }
+        } else if (shipSelectedSize === 4 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 8)) {
+          if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated') && !playerCells[cellIndex + 1].classList.contains('nowValidated') && !playerCells[cellIndex + 2].classList.contains('nowValidated')){
+            playerCells[cellIndex].classList.add('validSelection')
+            playerCells[cellIndex - 1].classList.add('validSelection')
+            playerCells[cellIndex + 1].classList.add('validSelection')
+            playerCells[cellIndex + 2].classList.add('validSelection')
+          }
+        } else if (shipSelectedSize === 5 && (Math.floor(cellIndex % rowWidth > 1) && (Math.floor(cellIndex % rowWidth) < 8))) {
+          if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 2].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated') && !playerCells[cellIndex + 1].classList.contains('nowValidated') && !playerCells[cellIndex + 2].classList.contains('nowValidated')) {
+            playerCells[cellIndex].classList.add('validSelection')
+            playerCells[cellIndex - 2].classList.add('validSelection')
+            playerCells[cellIndex - 1].classList.add('validSelection')
+            playerCells[cellIndex + 1].classList.add('validSelection')
+            playerCells[cellIndex + 2].classList.add('validSelection')
+          }
+        } else if (shipSelectedSize === 2 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 10)) {
+          if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated')) {
+            playerCells[cellIndex].classList.add('validSelection')
+            playerCells[cellIndex - 1].classList.add('validSelection')
+          }
         }
       }
-    } else if (shipDirection === 'horizontal') {
-      if (shipSelectedSize === 3 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 9)) {
-        if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated') && !playerCells[cellIndex + 1].classList.contains('nowValidated')) {
-          playerCells[cellIndex].classList.add('validSelection')
-          playerCells[cellIndex - 1].classList.add('validSelection')
-          playerCells[cellIndex + 1].classList.add('validSelection')
-        }
-      } else if (shipSelectedSize === 4 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 8)) {
-        if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated') && !playerCells[cellIndex + 1].classList.contains('nowValidated') && !playerCells[cellIndex + 2].classList.contains('nowValidated')){
-          playerCells[cellIndex].classList.add('validSelection')
-          playerCells[cellIndex - 1].classList.add('validSelection')
-          playerCells[cellIndex + 1].classList.add('validSelection')
-          playerCells[cellIndex + 2].classList.add('validSelection')
-        }
-      } else if (shipSelectedSize === 5 && (Math.floor(cellIndex % rowWidth > 1) && (Math.floor(cellIndex % rowWidth) < 8))) {
-        if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 2].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated') && !playerCells[cellIndex + 1].classList.contains('nowValidated') && !playerCells[cellIndex + 2].classList.contains('nowValidated')) {
-          playerCells[cellIndex].classList.add('validSelection')
-          playerCells[cellIndex - 2].classList.add('validSelection')
-          playerCells[cellIndex - 1].classList.add('validSelection')
-          playerCells[cellIndex + 1].classList.add('validSelection')
-          playerCells[cellIndex + 2].classList.add('validSelection')
-        }
-      } else if (shipSelectedSize === 2 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 10)) {
-        if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated')) {
-          playerCells[cellIndex].classList.add('validSelection')
-          playerCells[cellIndex - 1].classList.add('validSelection')
-        }
+    }
+  }
+
+  // generate players chosen positions for each ship + udpate the playerShips object
+  function createPlayerPositions(){
+    // loop through playerCells and identify which playerCells are selected and have validSelection class
+    // then add indexs to the ships array
+    playerCells.forEach(cell => {
+      if (cell.classList.contains('validSelection')) {
+        playerShips[shipCount].locations.push(parseInt(cell.dataset.index))
+        cell.classList.add('nowValidated')
       }
+    })
+    
+    // console.log(playerShips[shipCount])
+    if (shipCount < 4){
+      shipCount++
+      shipSelectedSize = playerShips[shipCount].size
+    } else if (shipCount === 4) {
+      // playerGrid.click(false)
+      playerReady = true
+      playerGrid.classList.add('grid-disabled')
+      console.log('Player Ships ->', playerShips)
+      console.log('the end')
     }
   }
 
@@ -182,214 +352,6 @@ function init() {
       }
     }
   }
-
-  // generate players chosen positions for each ship + udpate the playerShips object
-  function createPlayerPositions(){
-    
-    // loop through playerCells and identify which playerCells are selected and have validSelection class
-    // then add indexs to the ships array
-    playerCells.forEach(cell => {
-      if (cell.classList.contains('validSelection')) {
-        playerShips[playerShipToSet].locations.push(parseInt(cell.dataset.index))
-        cell.classList.add('nowValidated')
-      }
-    })
-
-    console.log(playerShips[playerShipToSet])
-  }
-
-  // randomly generate CPU positions for each ship + update the cpuShips object
-  function createComputerPositions(){
-
-    // looping through the computerShips array and setting random positions for each ship
-    // validation also applied to ensure ships are not already positioned there
-    for (let i = 0; i < computerShips.length; i++){
-
-      // select random shipDirection
-      let randomShipDirection = pickRandomShipDirection()
-
-      // select random starting cell to place ship
-      let randomCell = pickRandomCellNumber()
-
-      // select the type of ship to position
-      // const computerShip = computerShips[i].name
-      // console.log(computerShip)
-
-      // select the size of the ship to position
-      const computerShipSize = computerShips[i].size
-      // console.log('Ship size ->', computerShipSize)
-
-      // validation to ensure space is free
-      let validateWork = validateComputer(i, computerShipSize, randomCell, randomShipDirection)
-      // console.log(randomCell, randomShipDirection, validateWork)
-
-      while (validateWork === false) {
-        randomShipDirection = pickRandomShipDirection()
-        randomCell = pickRandomCellNumber()
-        validateWork = validateComputer(i, computerShipSize, randomCell, randomShipDirection)
-        // console.log(randomCell, randomShipDirection, validateWork)
-      }
-
-      // set validated cells set to Validated, so can't be taken
-      pushValidatedComputerShips(i)
-      setValidComputer()
-    }
-    // now push all Validated ships to the array
-    // pushValidatedComputerShips()
-    // console.log(computerShips[computerShipToSet])
-  }
-
-  // function that randomly chooses direction of ship (when setting computer ships)
-  function pickRandomShipDirection() {
-    return Math.random() < 0.5 ? 'horizontal' : 'vertical'
-  }
-
-  // function that randomly chooses starting cell of ship (when setting computer ships)
-  function pickRandomCellNumber() {
-    return Math.floor(Math.random() * colHeight * rowWidth)
-  }
-
-  function validateComputer(shipIndex, shipSize, cellIndex, shipDirection){
-
-    // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
-    if (shipDirection === 'vertical') {
-      if (shipSize === 3 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 9)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated') && !computerCells[cellIndex + 10].classList.contains('nowValidated')){
-          computerCells[cellIndex].classList.add('validSelection')
-          computerCells[cellIndex - 10].classList.add('validSelection')
-          computerCells[cellIndex + 10].classList.add('validSelection')
-          tempArr = [cellIndex, cellIndex - 10, cellIndex + 10]
-          // pushValidatedComputerShips(shipIndex)
-          return true
-        }
-      } else if (shipSize === 4 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated') && !computerCells[cellIndex + 10].classList.contains('nowValidated') && !computerCells[cellIndex + 20].classList.contains('nowValidated')){
-          computerCells[cellIndex].classList.add('validSelection')
-          computerCells[cellIndex - 10].classList.add('validSelection')
-          computerCells[cellIndex + 10].classList.add('validSelection')
-          computerCells[cellIndex + 20].classList.add('validSelection')
-          tempArr = [cellIndex, cellIndex - 10, cellIndex + 10, cellIndex + 20]
-          // pushValidatedComputerShips(shipIndex)
-          return true
-        }
-      } else if (shipSize === 2 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 10)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated')) {
-          computerCells[cellIndex].classList.add('validSelection')
-          computerCells[cellIndex - 10].classList.add('validSelection')
-          tempArr = [cellIndex, cellIndex - 10]
-          // pushValidatedComputerShips(shipIndex)
-          return true
-        }
-      } else if (shipSize === 5 && (Math.floor(cellIndex / rowWidth) > 1) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 20].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated') && !computerCells[cellIndex + 10].classList.contains('nowValidated') && !computerCells[cellIndex + 20].classList.contains('nowValidated')) {
-          computerCells[cellIndex].classList.add('validSelection')
-          computerCells[cellIndex - 20].classList.add('validSelection')
-          computerCells[cellIndex - 10].classList.add('validSelection')
-          computerCells[cellIndex + 10].classList.add('validSelection')
-          computerCells[cellIndex + 20].classList.add('validSelection')
-          tempArr = [cellIndex, cellIndex - 20, cellIndex - 10, cellIndex + 10, cellIndex + 20]
-          // pushValidatedComputerShips(shipIndex)
-          return true
-        }
-      }
-    } else if (shipDirection === 'horizontal') {
-      if (shipSize === 3 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 9)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated') && !computerCells[cellIndex + 1].classList.contains('nowValidated')) {
-          computerCells[cellIndex].classList.add('validSelection')
-          computerCells[cellIndex - 1].classList.add('validSelection')
-          computerCells[cellIndex + 1].classList.add('validSelection')
-          tempArr = [cellIndex, cellIndex - 1, cellIndex + 1]
-          // pushValidatedComputerShips(shipIndex)
-          return true
-        }
-      } else if (shipSize === 4 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 8)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated') && !computerCells[cellIndex + 1].classList.contains('nowValidated') && !computerCells[cellIndex + 2].classList.contains('nowValidated')){
-          computerCells[cellIndex].classList.add('validSelection')
-          computerCells[cellIndex - 1].classList.add('validSelection')
-          computerCells[cellIndex + 1].classList.add('validSelection')
-          computerCells[cellIndex + 2].classList.add('validSelection')
-          tempArr = [cellIndex, cellIndex - 1, cellIndex + 1, cellIndex + 2]
-          // pushValidatedComputerShips(shipIndex)
-          return true
-        }
-      } else if (shipSize === 5 && (Math.floor(cellIndex % rowWidth > 1) && (Math.floor(cellIndex % rowWidth) < 8))) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 2].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated') && !computerCells[cellIndex + 1].classList.contains('nowValidated') && !computerCells[cellIndex + 2].classList.contains('nowValidated')) {
-          computerCells[cellIndex].classList.add('validSelection')
-          computerCells[cellIndex - 2].classList.add('validSelection')
-          computerCells[cellIndex - 1].classList.add('validSelection')
-          computerCells[cellIndex + 1].classList.add('validSelection')
-          computerCells[cellIndex + 2].classList.add('validSelection')
-          tempArr = [cellIndex, cellIndex - 2, cellIndex - 1, cellIndex + 1, cellIndex + 2]
-          // pushValidatedComputerShips(shipIndex)
-          return true
-        }
-      } else if (shipSize === 2 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 10)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated')) {
-          computerCells[cellIndex].classList.add('validSelection')
-          computerCells[cellIndex - 1].classList.add('validSelection')
-          tempArr = [cellIndex, cellIndex - 1]
-          // pushValidatedComputerShips(shipIndex)
-          return true
-        }
-      }
-    }
-    // if none of the conditions are met, return as false (so needs to check again)
-    return false
-  }
-
-  function setValidComputer(){
-    
-    // loop through computerCells and identify which computerCells are selected and have validSelection class
-    // then add indexs to the ships array
-    computerCells.forEach(cell => {
-      if (cell.classList.contains('validSelection')) {
-        // computerShips[computerShipToSet].locations.push(parseInt(cell.dataset.index))
-        cell.classList.add('nowValidated')
-      }
-    })
-
-    // console.log(computerShips[computerShipToSet])
-  }
-
-  function pushValidatedComputerShips(shipIndex){
-    // computerCells.forEach(cell => {
-    //   if (cell.classList.contains('nowValidated')) {
-    //     computerShips[computerShipToSet].locations.push(parseInt(cell.dataset.index))
-    //   }
-    // })
-    // console.log(shipIndex, tempArr)
-    computerShips[shipIndex].locations.push(tempArr)
-    tempArr = []
-    console.log(computerShips)
-  }
-
-  // NOT BEING USED:
-  // function that checks to see whether a valid position to place ship
-  // returns boolean
-  // function canPlaceShip(ship, startIndex, orientation){
-  //   // Check if the ship fits on the board
-  //   if (orientation === 'horizontal' && (startIndex % colHeight) + ship.size > colHeight) {
-  //     return false
-  //   } else if (orientation === 'vertical' && Math.floor(startIndex / colHeight) + ship.size > rowWidth) {
-  //     return false
-  //   }
-
-  //   // Check if the ship overlaps with any existing ships
-  //   for (let i = 0; i < ship.size; i++) {
-  //     const index = orientation === 'horizontal' ? startIndex + i : startIndex + i * colHeight
-  //     if (computerGrid[index] !== 0) {
-  //       return false
-  //     }
-  //   }
-
-  //   // If the ship fits and does not overlap, return true
-  //   return true
-  // }
-
-  // // function that places ship into array
-  // function placeShip(ship, startIndex, orientation){
-  //   console.log(ship, startIndex, orientation)
-  // }
 
   // runs players Turn.  It will call fireShot.
   function playerTurn() {
@@ -436,6 +398,8 @@ function init() {
   document.addEventListener('keydown', rotateShip)
 
   createComputerPositions()
+
+  console.log('Computer Ships ->', computerShips)
 }
 
 window.addEventListener('DOMContentLoaded', init)

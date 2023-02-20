@@ -37,6 +37,11 @@ body {
   cursor: pointer;
 }
 
+.grid-disabled div:hover {
+  pointer-events: none;
+  cursor: none;
+}
+
 .validSelection {
   background-color: lightgray;
 }
