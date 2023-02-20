@@ -26,25 +26,25 @@ function init() {
   // each ship will get smaller in size when hit (-1)
   // locations will show the cell dataset index
   const playerShips = [
-    { name: 'Carrier', size: 5, locations: [] },
-    { name: 'Battleship', size: 4, locations: [] },
-    { name: 'Destroyer', size: 3, locations: [] },
-    { name: 'Submarine', size: 3, locations: [] },
-    { name: 'Patrol', size: 2, locations: [] }
+    { name: 'Carrier', size: 5, health: 5, locations: [] },
+    { name: 'Battleship', size: 4, health: 4, locations: [] },
+    { name: 'Destroyer', size: 3, health: 3, locations: [] },
+    { name: 'Submarine', size: 3, health: 3, locations: [] },
+    { name: 'Patrol', size: 2, health: 2, locations: [] }
   ]
 
   const computerShips = [
-    { name: 'Carrier', size: 5, locations: [] },
-    { name: 'Battleship', size: 4, locations: [] },
-    { name: 'Destroyer', size: 3, locations: [] },
-    { name: 'Submarine', size: 3, locations: [] },
-    { name: 'Patrol', size: 2, locations: [] }
+    { name: 'Carrier', size: 5, health: 5, locations: [] },
+    { name: 'Battleship', size: 4, health: 4, locations: [] },
+    { name: 'Destroyer', size: 3, health: 3, locations: [] },
+    { name: 'Submarine', size: 3, health: 3, locations: [] },
+    { name: 'Patrol', size: 2, health: 2, locations: [] }
   ]
 
   // Global variation for the selected ship size
   // defaulting the first ship to set as the Carrier (largest first!) and vertical
   let shipCount = 0
-  let playerReady = false
+  let playersTurn = false   // sets when it is Players turn to play.  Disabled before set ships positions
   let playerShipToSet = carrier
   let computerShipToSet = submarine
   let shipSelectedSize = playerShips[playerShipToSet].size
@@ -63,12 +63,14 @@ function init() {
   // const grid = document.querySelector('.grid')
   const playerGrid = document.querySelector('#playerGrid')
   const computerGrid = document.querySelector('#computerGrid')
+  const playerSpan = document.querySelector('#playerSpan')
   const rowWidth = 10
   const colHeight = 10
   const cellCount = rowWidth * colHeight
   const playerCells = []
   const computerCells = []
-  let tempArr = []
+  // let tempArr = []
+  const attemptedShots = [] // tracks all cells that Player has clicked.
 
   // ! EVENTS
 
@@ -113,18 +115,18 @@ function init() {
       // console.log('Ship size ->', computerShipSize)
 
       // validation to ensure space is free
-      let validateWork = validateComputer(computerShipSize, randomCell, randomShipDirection)
+      let validateWork = validateComputer(i, computerShipSize, randomCell, randomShipDirection)
       // console.log(randomCell, randomShipDirection, validateWork)
 
       while (validateWork === false) {
         randomShipDirection = pickRandomShipDirection()
         randomCell = pickRandomCellNumber()
-        validateWork = validateComputer(computerShipSize, randomCell, randomShipDirection)
+        validateWork = validateComputer(i, computerShipSize, randomCell, randomShipDirection)
         // console.log(randomCell, randomShipDirection, validateWork)
       }
 
       // set ships as validated and push all the validated ships to the Computer Ships array
-      pushValidatedComputerShips(i)
+      // pushValidatedComputerShips(i)
       setValidComputer()
     }
   }
@@ -139,7 +141,7 @@ function init() {
     return Math.floor(Math.random() * colHeight * rowWidth)
   }
 
-  function validateComputer(shipSize, cellIndex, shipDirection){
+  function validateComputer(shipIndex, shipSize, cellIndex, shipDirection){
 
     // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
     if (shipDirection === 'vertical') {
@@ -148,7 +150,9 @@ function init() {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 10].classList.add('validSelection')
           computerCells[cellIndex + 10].classList.add('validSelection')
-          tempArr = [cellIndex - 10, cellIndex, cellIndex + 10]
+          // tempArr = [cellIndex - 10, cellIndex, cellIndex + 10]
+          // console.log('Should be here', shipIndex)
+          computerShips[shipIndex].locations.push(cellIndex - 10, cellIndex, cellIndex + 10)
           return true
         }
       } else if (shipSize === 4 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
@@ -157,14 +161,16 @@ function init() {
           computerCells[cellIndex - 10].classList.add('validSelection')
           computerCells[cellIndex + 10].classList.add('validSelection')
           computerCells[cellIndex + 20].classList.add('validSelection')
-          tempArr = [cellIndex - 10, cellIndex, cellIndex + 10, cellIndex + 20]
+          // tempArr = [cellIndex - 10, cellIndex, cellIndex + 10, cellIndex + 20]
+          computerShips[shipIndex].locations.push(cellIndex - 10, cellIndex, cellIndex + 10, cellIndex + 20)
           return true
         }
       } else if (shipSize === 2 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 10)) {
         if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated')) {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 10].classList.add('validSelection')
-          tempArr = [cellIndex - 10, cellIndex]
+          // tempArr = [cellIndex - 10, cellIndex]
+          computerShips[shipIndex].locations.push(cellIndex - 10, cellIndex)
           return true
         }
       } else if (shipSize === 5 && (Math.floor(cellIndex / rowWidth) > 1) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
@@ -174,7 +180,8 @@ function init() {
           computerCells[cellIndex - 10].classList.add('validSelection')
           computerCells[cellIndex + 10].classList.add('validSelection')
           computerCells[cellIndex + 20].classList.add('validSelection')
-          tempArr = [cellIndex - 20, cellIndex - 10, cellIndex, cellIndex + 10, cellIndex + 20]
+          // tempArr = [cellIndex - 20, cellIndex - 10, cellIndex, cellIndex + 10, cellIndex + 20]
+          computerShips[shipIndex].locations.push(cellIndex - 20, cellIndex - 10, cellIndex, cellIndex + 10, cellIndex + 20)
           return true
         }
       }
@@ -184,7 +191,8 @@ function init() {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 1].classList.add('validSelection')
           computerCells[cellIndex + 1].classList.add('validSelection')
-          tempArr = [cellIndex - 1, cellIndex, cellIndex + 1]
+          // tempArr = [cellIndex - 1, cellIndex, cellIndex + 1]
+          computerShips[shipIndex].locations.push(cellIndex - 1, cellIndex, cellIndex + 1)
           return true
         }
       } else if (shipSize === 4 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 8)) {
@@ -193,7 +201,8 @@ function init() {
           computerCells[cellIndex - 1].classList.add('validSelection')
           computerCells[cellIndex + 1].classList.add('validSelection')
           computerCells[cellIndex + 2].classList.add('validSelection')
-          tempArr = [cellIndex - 1, cellIndex, cellIndex + 1, cellIndex + 2]
+          // tempArr = [cellIndex - 1, cellIndex, cellIndex + 1, cellIndex + 2]
+          computerShips[shipIndex].locations.push(cellIndex - 1, cellIndex, cellIndex + 1, cellIndex + 2)
           return true
         }
       } else if (shipSize === 5 && (Math.floor(cellIndex % rowWidth > 1) && (Math.floor(cellIndex % rowWidth) < 8))) {
@@ -203,7 +212,8 @@ function init() {
           computerCells[cellIndex - 1].classList.add('validSelection')
           computerCells[cellIndex + 1].classList.add('validSelection')
           computerCells[cellIndex + 2].classList.add('validSelection')
-          tempArr = [cellIndex - 2, cellIndex - 1, cellIndex, cellIndex + 1, cellIndex + 2]
+          // tempArr = [cellIndex - 2, cellIndex - 1, cellIndex, cellIndex + 1, cellIndex + 2]
+          computerShips[shipIndex].locations.push(cellIndex - 2, cellIndex - 1, cellIndex, cellIndex + 1, cellIndex + 2)
           return true
         }
       } else if (shipSize === 2 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 10)) {
@@ -211,6 +221,7 @@ function init() {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 1].classList.add('validSelection')
           tempArr = [cellIndex - 1, cellIndex]
+          computerShips[shipIndex].locations.push(cellIndex - 1, cellIndex)
           return true
         }
       }
@@ -232,12 +243,12 @@ function init() {
     // console.log(computerShips[computerShipToSet])
   }
 
-  function pushValidatedComputerShips(shipIndex){
-    // push validated locations from temp array into object, and empty the temp array
-    computerShips[shipIndex].locations.push(tempArr)
-    tempArr = []
-    // console.log(computerShips)
-  }
+  // function pushValidatedComputerShips(shipIndex){
+  //   // push validated locations from temp array into object, and empty the temp array
+  //   computerShips[shipIndex].locations.push(tempArr)
+  //   tempArr = []
+  //   // console.log(computerShips)
+  // }
 
   // function that validates whether it is possible for a player to select grid position of selected ship during game setup
   // triggers when hovering over mouse
@@ -248,7 +259,7 @@ function init() {
     const cellIndex = parseInt(e.target.dataset.index)
     // console.log(cellIndex)
 
-    if (playerReady !== true){
+    if (playersTurn !== true){
       // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
       if (shipDirection === 'vertical') {
         if (shipSelectedSize === 3 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 9)) {
@@ -326,12 +337,15 @@ function init() {
       shipCount++
       shipSelectedSize = playerShips[shipCount].size
     } else if (shipCount === 4) {
-      // playerGrid.click(false)
-      playerReady = true
-      playerGrid.classList.add('grid-disabled')
-      console.log('Player Ships ->', playerShips)
-      console.log('the end')
+      playerIsReady()
     }
+  }
+
+  function playerIsReady() {
+    playersTurn = true
+    playerGrid.classList.add('grid-disabled')
+    playerSpan.innerText = 'Contestents ready!'
+    console.log('Player Ships ->', playerShips)
   }
 
   function removePosition(){
@@ -354,8 +368,17 @@ function init() {
   }
 
   // runs players Turn.  It will call fireShot.
-  function playerTurn() {
-
+  function playerTurn(e) {
+    const cellFire = parseInt(e.target.dataset.index)
+    
+    if (!attemptedShots.includes(cellFire)) {
+      attemptedShots.push(cellFire)
+      fireShot(cellFire)
+    } else {
+      playerSpan.innerText = 'Already clicked'
+    }
+    console.log(attemptedShots)
+    
   }
 
   // function that randomly generates computer's turn.  It will call fireShot
@@ -366,8 +389,33 @@ function init() {
   // determine if a missile has hit a ship or missed.  used for both player and CPU.  
   // Update the ships objects + grid accordingly
   // Keep track of player and CPUs ships, check gameState
-  function fireShot() {
+  function fireShot(cellFire) {
     
+    // playerSpan.innerText = cellFire
+    // for (let i = 0; i < computerShips.length; i++) {
+    //   if (computerShips[i].locations.includes(cellFire)) {
+    //     console.log(playerSpan.innerText = `hit! ${cellFire}`)
+    //     break
+    //   } else {
+    //     console.log(playerSpan.innerText = `miss! ${cellFire}`)
+    //   }
+    // }
+
+    // identify if the cell that has been fired is contained within computerShips array.
+    const locateShip = computerShips.find(ship => ship.locations.includes(cellFire))
+    if (locateShip) {
+      if (locateShip.health > 1) {
+        locateShip.health--
+        playerSpan.innerText = `hit! ${cellFire}`
+      } else if (locateShip.health === 1) {
+        locateShip.health = 0
+        playerSpan.innerText = `you sunk mandem ${locateShip.name}`
+      }
+    } else {
+      playerSpan.innerText = `miss! ${cellFire}`
+    }
+
+
   }
 
   // check game status: who's turn it is + whether anyone has won yet
@@ -395,8 +443,9 @@ function init() {
   playerCells.forEach(cell => cell.addEventListener('mouseout', removePosition))
   playerCells.forEach(cell => cell.addEventListener('mouseover', validatePosition))
   playerCells.forEach(cell => cell.addEventListener('click', createPlayerPositions))
+  computerCells.forEach(cell => cell.addEventListener('click', playerTurn))
   document.addEventListener('keydown', rotateShip)
-
+  
   createComputerPositions()
 
   console.log('Computer Ships ->', computerShips)
