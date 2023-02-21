@@ -4,30 +4,92 @@
 
 body {
   height: 100vh;
+  background-image: url(../assets/bg-image.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   margin: 0;
 }
 
-
 .grid-wrapper {
-  height: 100vh;
+  /* height: 100vh; */
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 1px solid blue;
+}
+
+#player, #controls, #computer {
+  margin: 2em 1em;
+}
+
+#player, #computer {
+  border: 10px solid white;
+  border-radius: 5px;
+  box-shadow: 5px 5px 20px white;
+}
+
+#controls {
+  /* border: 1px solid purple; */
+  text-align: center;
+  width: 100%;
+}
+
+.userType {
+  font-family: 'Black Ops One', cursive;
+  font-size: 40px;
+  color: black;
+}
+
+.userType, .textSpan {
+  background-color: white;
+  display: flex;
+}
+
+.userType img {
+  height: 100px;
+  margin-left: 1px;
+}
+
+.name {
+  margin-left: 15px;
 }
 
 .grid {
   align-items: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid white;
   display: flex;
   flex-wrap: wrap;
   height: 100%;
   justify-content: center;
   height: 400px;
   width: 400px;
+  background-image: url(../assets/sea.jpeg);
+  background-repeat: repeat-x;
+  /* background-attachment: fixed; */
+  /* background-repeat: no-repeat; */
+  background-position: center;
+  background-size: cover;
+  animation: animate 60s linear infinite;
+}
+
+@keyframes animate{
+  0%{
+    background-position: top 80px;
+  }
+  
+  40%{
+    background-position:left 800px top 0px;
+  }
+  
+  80%{
+    background-position:left 400px top 0px;
+  } 
 }
 
 .grid div {
-  border: 1px solid lightgrey;
+  border: 1px solid lightcyan;
   flex-grow: 1;
   height: 10%;
   width: 10%;
@@ -44,12 +106,28 @@ body {
 
 .validSelection {
   background-color: lightgray;
+}  
+.nowValidated {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
-.nowValidated {
-  background-color: grey;
+.shotHit {
+  background-color: red;
+  border-radius: 30px;
+}
+
+.shotMissed {
+  background-color: #095a9e;
+  border-radius: 30px;
+  opacity: 85%;
 }
 
 #controls {
   width: 100px;
+}
+
+button {
+  width: 100px;
+  height: 40px;
+  cursor: pointer;
 }

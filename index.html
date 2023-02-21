@@ -4,21 +4,37 @@
     <meta charset="utf-8">
     <title>Battleships WW3</title>
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
     <script src="scripts/app.js" charset="utf-8"></script>
   </head>
   <body>
     <div class="grid-wrapper">
       <section id="player">
+        <div class="userType">
+          <div><img src="assets/trump.png"/></div>
+          <div class="name">TRUMP</div>
+        </div>
         <div id="playerGrid" class="grid"></div>
-        <div id="playerSpan"></div>
+        <div class="textSpan" id="playerSpan"></div>
       </section>
       <section id="controls">
         <div><button id="start-btn">Start</button></div>
       </section>
       <section id="computer">
+        <div class="userType">
+          <div><img src="assets/kim.png"/></div>
+          <div class="name">KIM</div>
+        </div>
         <div id="computerGrid" class="grid"></div>
-        <div id="computerSpan"></div>  
+        <div class="textSpan" id="computerSpan"> </div>  
       </section>
     </div>
+    <!-- <div class="info-wrapper">
+      <section>Test</section>
+      <section>Test</section>
+      <section>Test</section>
+    </div> -->
   </body>
 </html>

@@ -46,33 +46,39 @@ function init() {
   const computerSpan = document.querySelector('#computerSpan')
   const startBtn = document.querySelector('#start-btn')
 
-  // Grid variables
-  const rowWidth = 10
-  const colHeight = 10
-  const cellCount = rowWidth * colHeight
-
   // Ship variables
   // const playerShipToStart = 0
   let shipSelectedSize = playerShips[0].size  // init with first boat in ships array
   let shipDirection = 'vertical'  // init with first direction, either 'vertical' || 'horizontal'
   let shipCount = 0 // ship counter to loop through ships when creating
 
+  // Grid variables
+  const rowWidth = 10
+  const colHeight = 10
+  const cellCount = rowWidth * colHeight
+
   // Player and computer variables
   const playerCells = []
   const computerCells = []
   const attemptedShots = [] // tracks all cells that Player has clicked.
   const attemptedShotsCPU = []
+
+  // Game variables
+  let gameStarted = false
   let playersTurn = false   // sets when it is Players turn to play.  Disabled before set ships positions
   let endGameWinner = 'none'
 
   // ! EVENTS
 
   function startGame(){
+    playerGrid.classList.remove('grid-disabled')
     playerSpan.innerText = 'Please put your pieces down!'
     createComputerPositions()
     computerSpan.innerText = 'Computer pieces randomly generated'
     console.log('Player Ships ->', playerShips)
     console.log('Computer Ships ->', computerShips)
+    gameStarted = true
+    startBtn.disabled = true
   }
 
   // creates each grid when page is loaded and initialised. 10x10 with unique indexes.
@@ -84,7 +90,7 @@ function init() {
       const cell = document.createElement('div')
 
       // Add index as innerText
-      cell.innerText = i
+      // cell.innerText = i
 
       // Data attribute representing the index
       // cell.setAttribute('data-index', i)
@@ -253,7 +259,7 @@ function init() {
     const cellIndex = parseInt(e.target.dataset.index)
     // console.log(cellIndex)
 
-    if (playersTurn !== true){
+    if (playersTurn !== true && gameStarted === true){
       // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
       if (shipDirection === 'vertical') {
         if (shipSelectedSize === 3 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 9)) {
@@ -358,6 +364,7 @@ function init() {
   function playerIsReady() {
     playersTurn = true
     playerGrid.classList.add('grid-disabled')
+    computerGrid.classList.remove('grid-disabled')
     playerSpan.innerText = 'Contestents ready!'
     computerSpan.innerText = 'Contestents ready!'
     console.log('Player Ships ->', playerShips)
@@ -434,23 +441,29 @@ function init() {
         locateShip.health--
         if (user === 'player'){
           playerSpan.innerText = `hit! ${cellFire}`
+          computerCells[cellFire].classList.add('shotHit')
         } else {
           computerSpan.innerText = `hit! ${cellFire}`
+          playerCells[cellFire].classList.add('shotHit')
         }
       } else if (locateShip.health === 1) {
         locateShip.health = 0
         if (user === 'player'){
           playerSpan.innerText = `you sunk mandem ${locateShip.name}`
+          computerCells[cellFire].classList.add('shotHit')
         } else {
           computerSpan.innerText = `you sunk mandem ${locateShip.name}`
+          playerCells[cellFire].classList.add('shotHit')
         }
         checkEndGame(user)
       }
     } else {
       if (user === 'player'){
         playerSpan.innerText = `miss! ${cellFire}`
+        computerCells[cellFire].classList.add('shotMissed')
       } else {
         computerSpan.innerText = `miss! ${cellFire}`
+        playerCells[cellFire].classList.add('shotMissed')
       }
     }
 
@@ -481,8 +494,10 @@ function init() {
 
   function endGame(user){
     endGameWinner = user
-    console.log('We have a winner:', user)
-    alert('We have a winner:', user)
+    console.log('We have a winner:', endGameWinner)
+    startBtn.disabled = false
+    gameStarted = false
+    alert('We have a winner:', endGameWinner)
   }
 
   // not MVP
@@ -501,6 +516,8 @@ function init() {
   // create the grids
   createGrid(playerGrid, playerCells)
   createGrid(computerGrid, computerCells)
+  playerGrid.classList.add('grid-disabled')
+  computerGrid.classList.add('grid-disabled')
 
   startBtn.addEventListener('click', startGame)
   playerCells.forEach(cell => cell.addEventListener('mouseout', removePosition))
