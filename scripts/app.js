@@ -46,17 +46,12 @@ function init() {
   let shipCount = 0
   let playersTurn = false   // sets when it is Players turn to play.  Disabled before set ships positions
   let playerShipToSet = carrier
-  let computerShipToSet = submarine
+  // let computerShipToSet = submarine
   let shipSelectedSize = playerShips[playerShipToSet].size
   let shipDirection = 'vertical'  // either 'vertical' || 'horizontal'
 
   // 2. Game Setup: Player chooses ship position on grid, define random CPU positions. Store in appropriate arrays/objects.
   // - Storing in the empty Arrays defined above
-
-  // testing the push to array:
-  // playerShips[carrier].locations.push(23, 24, 25)
-  // computerShips[patrol].locations.push(56, 57)
-  // console.log(playerShips[carrier], computerShips[patrol])
 
   // GLOBAL VARIABLES
   //  Generating a grid with playerCells array
@@ -64,6 +59,7 @@ function init() {
   const playerGrid = document.querySelector('#playerGrid')
   const computerGrid = document.querySelector('#computerGrid')
   const playerSpan = document.querySelector('#playerSpan')
+  const computerSpan = document.querySelector('#computerSpan')
   const rowWidth = 10
   const colHeight = 10
   const cellCount = rowWidth * colHeight
@@ -220,7 +216,7 @@ function init() {
         if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated')) {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 1].classList.add('validSelection')
-          tempArr = [cellIndex - 1, cellIndex]
+          // tempArr = [cellIndex - 1, cellIndex]
           computerShips[shipIndex].locations.push(cellIndex - 1, cellIndex)
           return true
         }
@@ -242,13 +238,6 @@ function init() {
 
     // console.log(computerShips[computerShipToSet])
   }
-
-  // function pushValidatedComputerShips(shipIndex){
-  //   // push validated locations from temp array into object, and empty the temp array
-  //   computerShips[shipIndex].locations.push(tempArr)
-  //   tempArr = []
-  //   // console.log(computerShips)
-  // }
 
   // function that validates whether it is possible for a player to select grid position of selected ship during game setup
   // triggers when hovering over mouse
@@ -341,13 +330,6 @@ function init() {
     }
   }
 
-  function playerIsReady() {
-    playersTurn = true
-    playerGrid.classList.add('grid-disabled')
-    playerSpan.innerText = 'Contestents ready!'
-    console.log('Player Ships ->', playerShips)
-  }
-
   function removePosition(){
     // this function resets the check for validation as the mouse moves away (out) from the selected playerCells
     playerCells.forEach(cell => cell.classList.remove('validSelection'))
@@ -367,6 +349,13 @@ function init() {
     }
   }
 
+  function playerIsReady() {
+    playersTurn = true
+    playerGrid.classList.add('grid-disabled')
+    playerSpan.innerText = 'Contestents ready!'
+    console.log('Player Ships ->', playerShips)
+  }
+
   // runs players Turn.  It will call fireShot.
   function playerTurn(e) {
     const cellFire = parseInt(e.target.dataset.index)
@@ -374,15 +363,22 @@ function init() {
     if (!attemptedShots.includes(cellFire)) {
       attemptedShots.push(cellFire)
       fireShot(cellFire)
+      playersTurn = false
+      computerTurn()
     } else {
       playerSpan.innerText = 'Already clicked'
     }
-    console.log(attemptedShots)
+    console.log('Array of attempted shots ->', attemptedShots)
     
   }
 
   // function that randomly generates computer's turn.  It will call fireShot
   function computerTurn() {
+    computerSpan.innerText = 'Computers go...'
+    const randomCell = pickRandomCellNumber()
+    setTimeout(() => {
+      computerSpan.innerText = randomCell
+    }, '1500')
 
   }
 
@@ -390,16 +386,6 @@ function init() {
   // Update the ships objects + grid accordingly
   // Keep track of player and CPUs ships, check gameState
   function fireShot(cellFire) {
-    
-    // playerSpan.innerText = cellFire
-    // for (let i = 0; i < computerShips.length; i++) {
-    //   if (computerShips[i].locations.includes(cellFire)) {
-    //     console.log(playerSpan.innerText = `hit! ${cellFire}`)
-    //     break
-    //   } else {
-    //     console.log(playerSpan.innerText = `miss! ${cellFire}`)
-    //   }
-    // }
 
     // identify if the cell that has been fired is contained within computerShips array.
     const locateShip = computerShips.find(ship => ship.locations.includes(cellFire))
@@ -414,7 +400,6 @@ function init() {
     } else {
       playerSpan.innerText = `miss! ${cellFire}`
     }
-
 
   }
 
