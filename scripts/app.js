@@ -67,6 +67,8 @@ function init() {
   const computerCells = []
   // let tempArr = []
   const attemptedShots = [] // tracks all cells that Player has clicked.
+  const attemptedShotsCPU = []
+  let endGameWinner = 'none'
 
   // ! EVENTS
 
@@ -349,6 +351,7 @@ function init() {
     }
   }
 
+  // triggered once ships have been set (and validated), game is ready to start
   function playerIsReady() {
     playersTurn = true
     playerGrid.classList.add('grid-disabled')
@@ -356,56 +359,121 @@ function init() {
     console.log('Player Ships ->', playerShips)
   }
 
-  // runs players Turn.  It will call fireShot.
+  // triggered once it is player's turn + clicked on computer grid
   function playerTurn(e) {
+    // capture the cell that has clicked on
     const cellFire = parseInt(e.target.dataset.index)
     
+    // first check to make sure they haven't attempted shot already (does nothing)
     if (!attemptedShots.includes(cellFire)) {
+      // if they haven't, push to attemptedShots array to record shot, and then trigger the fireShot function
       attemptedShots.push(cellFire)
-      fireShot(cellFire)
+      fireShot('player', cellFire)
+
+      // now set to computers turn
       playersTurn = false
       computerTurn()
     } else {
-      playerSpan.innerText = 'Already clicked'
+      playerSpan.innerText = 'You already tried that spot! Try again...'
     }
-    console.log('Array of attempted shots ->', attemptedShots)
+    // console.log('Array of attempted shots ->', attemptedShots)
     
   }
 
   // function that randomly generates computer's turn.  It will call fireShot
   function computerTurn() {
     computerSpan.innerText = 'Computers go...'
-    const randomCell = pickRandomCellNumber()
+    let randomCell = pickRandomCellNumber()
     setTimeout(() => {
-      computerSpan.innerText = randomCell
-    }, '1500')
+      
+      if (!attemptedShotsCPU.includes(randomCell)) {
+        // if they haven't, push to attemptedShots array to record shot, and then trigger the fireShot function
+        attemptedShotsCPU.push(randomCell)
+        fireShot('computer', randomCell)
+        // computerSpan.innerText = randomCell
+  
+        // now set to players turn
+        playersTurn = true
+        // console.log('Not included in attemptedShotsCPU ->', attemptedShotsCPU)
+      } else {
+        while (attemptedShotsCPU.includes(randomCell)) {
+          // console.log('FAILED attemptedShotsCPU ->', randomCell)
+          randomCell = pickRandomCellNumber()
+        }
+        attemptedShotsCPU.push(randomCell)
+        fireShot('computer', randomCell)
+        // computerSpan.innerText = randomCell
+        // console.log('INCLUDED in attemptedShotsCPU ->', attemptedShotsCPU)
+      }
 
+      playerSpan.innerText = 'Players go...'
+    }, '1500')
+    
   }
 
   // determine if a missile has hit a ship or missed.  used for both player and CPU.  
   // Update the ships objects + grid accordingly
   // Keep track of player and CPUs ships, check gameState
-  function fireShot(cellFire) {
-
+  function fireShot(user, cellFire) {
+    
     // identify if the cell that has been fired is contained within computerShips array.
-    const locateShip = computerShips.find(ship => ship.locations.includes(cellFire))
+    let locateShip
+    if (user === 'player'){
+      locateShip = computerShips.find(ship => ship.locations.includes(cellFire))
+    } else {
+      locateShip = playerShips.find(ship => ship.locations.includes(cellFire))
+    }
+    
     if (locateShip) {
       if (locateShip.health > 1) {
         locateShip.health--
-        playerSpan.innerText = `hit! ${cellFire}`
+        if (user === 'player'){
+          playerSpan.innerText = `hit! ${cellFire}`
+        } else {
+          computerSpan.innerText = `hit! ${cellFire}`
+        }
       } else if (locateShip.health === 1) {
         locateShip.health = 0
-        playerSpan.innerText = `you sunk mandem ${locateShip.name}`
+        if (user === 'player'){
+          playerSpan.innerText = `you sunk mandem ${locateShip.name}`
+        } else {
+          computerSpan.innerText = `you sunk mandem ${locateShip.name}`
+        }
+        checkEndGame(user)
       }
     } else {
-      playerSpan.innerText = `miss! ${cellFire}`
+      if (user === 'player'){
+        playerSpan.innerText = `miss! ${cellFire}`
+      } else {
+        computerSpan.innerText = `miss! ${cellFire}`
+      }
     }
+
+    console.log('Computer Ships ->', computerShips)
+    console.log('Player Ships ->', playerShips)
 
   }
 
-  // check game status: who's turn it is + whether anyone has won yet
-  function gameState(){
+  // check game status: whether anyone has won yet
+  function checkEndGame(user) {
+    
+    let locateHealth
 
+    if (user === 'player'){
+      locateHealth = computerShips.every(ship => ship.health === 0)
+      console.log('Player Health ->', locateHealth)
+      if (locateHealth) {
+        endGameWinner = 'player'
+        console.log('We have a winner:', endGameWinner)
+      }
+    } else {
+      locateHealth = playerShips.every(ship => ship.health === 0)
+      console.log('Computer Health ->', locateHealth)
+      if (locateHealth) {
+        endGameWinner = 'computer'
+        console.log('We have a winner:', endGameWinner)
+      }
+    }
   }
 
   // not MVP
@@ -433,7 +501,7 @@ function init() {
   
   createComputerPositions()
 
-  console.log('Computer Ships ->', computerShips)
+  // console.log('Computer Ships ->', computerShips)
 }
 
 window.addEventListener('DOMContentLoaded', init)
