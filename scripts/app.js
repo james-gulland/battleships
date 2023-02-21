@@ -15,13 +15,6 @@ function init() {
   // - Game Status: defining a switch on who's turn it is; either Player or CPU + defining if game has been won or not.
   // - NOTE: no timer defined - not expecting to be time-based (i.e. unlimited time)
 
-  // these will be used when referring object below.
-  const carrier = 0
-  const battleship = 1
-  const destroyer = 2
-  const submarine = 3
-  const patrol = 4
-
   // each ship is represented by an object with a name, a size, and an empty array for its locations.
   // each ship will get smaller in size when hit (-1)
   // locations will show the cell dataset index
@@ -41,15 +34,6 @@ function init() {
     { name: 'Patrol', size: 2, health: 2, locations: [] }
   ]
 
-  // Global variation for the selected ship size
-  // defaulting the first ship to set as the Carrier (largest first!) and vertical
-  let shipCount = 0
-  let playersTurn = false   // sets when it is Players turn to play.  Disabled before set ships positions
-  let playerShipToSet = carrier
-  // let computerShipToSet = submarine
-  let shipSelectedSize = playerShips[playerShipToSet].size
-  let shipDirection = 'vertical'  // either 'vertical' || 'horizontal'
-
   // 2. Game Setup: Player chooses ship position on grid, define random CPU positions. Store in appropriate arrays/objects.
   // - Storing in the empty Arrays defined above
 
@@ -60,17 +44,36 @@ function init() {
   const computerGrid = document.querySelector('#computerGrid')
   const playerSpan = document.querySelector('#playerSpan')
   const computerSpan = document.querySelector('#computerSpan')
+  const startBtn = document.querySelector('#start-btn')
+
+  // Grid variables
   const rowWidth = 10
   const colHeight = 10
   const cellCount = rowWidth * colHeight
+
+  // Ship variables
+  // const playerShipToStart = 0
+  let shipSelectedSize = playerShips[0].size  // init with first boat in ships array
+  let shipDirection = 'vertical'  // init with first direction, either 'vertical' || 'horizontal'
+  let shipCount = 0 // ship counter to loop through ships when creating
+
+  // Player and computer variables
   const playerCells = []
   const computerCells = []
-  // let tempArr = []
   const attemptedShots = [] // tracks all cells that Player has clicked.
   const attemptedShotsCPU = []
+  let playersTurn = false   // sets when it is Players turn to play.  Disabled before set ships positions
   let endGameWinner = 'none'
 
   // ! EVENTS
+
+  function startGame(){
+    playerSpan.innerText = 'Please put your pieces down!'
+    createComputerPositions()
+    computerSpan.innerText = 'Computer pieces randomly generated'
+    console.log('Player Ships ->', playerShips)
+    console.log('Computer Ships ->', computerShips)
+  }
 
   // creates each grid when page is loaded and initialised. 10x10 with unique indexes.
   // passes through user type argument (player or computer)
@@ -356,7 +359,9 @@ function init() {
     playersTurn = true
     playerGrid.classList.add('grid-disabled')
     playerSpan.innerText = 'Contestents ready!'
+    computerSpan.innerText = 'Contestents ready!'
     console.log('Player Ships ->', playerShips)
+    console.log('Computer Ships ->', computerShips)
   }
 
   // triggered once it is player's turn + clicked on computer grid
@@ -463,17 +468,21 @@ function init() {
       locateHealth = computerShips.every(ship => ship.health === 0)
       console.log('Player Health ->', locateHealth)
       if (locateHealth) {
-        endGameWinner = 'player'
-        console.log('We have a winner:', endGameWinner)
+        endGame('player')
       }
     } else {
       locateHealth = playerShips.every(ship => ship.health === 0)
       console.log('Computer Health ->', locateHealth)
       if (locateHealth) {
-        endGameWinner = 'computer'
-        console.log('We have a winner:', endGameWinner)
+        endGame('computer')
       }
     }
+  }
+
+  function endGame(user){
+    endGameWinner = user
+    console.log('We have a winner:', user)
+    alert('We have a winner:', user)
   }
 
   // not MVP
@@ -493,14 +502,13 @@ function init() {
   createGrid(playerGrid, playerCells)
   createGrid(computerGrid, computerCells)
 
+  startBtn.addEventListener('click', startGame)
   playerCells.forEach(cell => cell.addEventListener('mouseout', removePosition))
   playerCells.forEach(cell => cell.addEventListener('mouseover', validatePosition))
   playerCells.forEach(cell => cell.addEventListener('click', createPlayerPositions))
   computerCells.forEach(cell => cell.addEventListener('click', playerTurn))
   document.addEventListener('keydown', rotateShip)
   
-  createComputerPositions()
-
   // console.log('Computer Ships ->', computerShips)
 }
 
