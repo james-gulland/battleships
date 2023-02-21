@@ -72,9 +72,9 @@ function init() {
 
   function startGame(){
     playerGrid.classList.remove('grid-disabled')
-    playerSpan.innerText = 'Please put your pieces down!'
+    playerSpan.innerText = '"TRUMP: OK patriots, time to deploy our ships!"'
     createComputerPositions()
-    computerSpan.innerText = 'Computer pieces randomly generated'
+    computerSpan.innerText = '"I deployed already NOOB LOL"'
     console.log('Player Ships ->', playerShips)
     console.log('Computer Ships ->', computerShips)
     gameStarted = true
@@ -267,6 +267,7 @@ function init() {
             playerCells[cellIndex].classList.add('validSelection')
             playerCells[cellIndex - 10].classList.add('validSelection')
             playerCells[cellIndex + 10].classList.add('validSelection')
+            return true
           }
         } else if (shipSelectedSize === 4 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
           if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated') && !playerCells[cellIndex + 10].classList.contains('nowValidated') && !playerCells[cellIndex + 20].classList.contains('nowValidated')){
@@ -274,11 +275,13 @@ function init() {
             playerCells[cellIndex - 10].classList.add('validSelection')
             playerCells[cellIndex + 10].classList.add('validSelection')
             playerCells[cellIndex + 20].classList.add('validSelection')
+            return true
           }
         } else if (shipSelectedSize === 2 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 10)) {
           if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated')) {
             playerCells[cellIndex].classList.add('validSelection')
             playerCells[cellIndex - 10].classList.add('validSelection')
+            return true
           }
         } else if (shipSelectedSize === 5 && (Math.floor(cellIndex / rowWidth) > 1) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
           if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 20].classList.contains('nowValidated') && !playerCells[cellIndex - 10].classList.contains('nowValidated') && !playerCells[cellIndex + 10].classList.contains('nowValidated') && !playerCells[cellIndex + 20].classList.contains('nowValidated')) {
@@ -287,6 +290,7 @@ function init() {
             playerCells[cellIndex - 10].classList.add('validSelection')
             playerCells[cellIndex + 10].classList.add('validSelection')
             playerCells[cellIndex + 20].classList.add('validSelection')
+            return true
           }
         }
       } else if (shipDirection === 'horizontal') {
@@ -295,6 +299,7 @@ function init() {
             playerCells[cellIndex].classList.add('validSelection')
             playerCells[cellIndex - 1].classList.add('validSelection')
             playerCells[cellIndex + 1].classList.add('validSelection')
+            return true
           }
         } else if (shipSelectedSize === 4 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 8)) {
           if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated') && !playerCells[cellIndex + 1].classList.contains('nowValidated') && !playerCells[cellIndex + 2].classList.contains('nowValidated')){
@@ -302,6 +307,7 @@ function init() {
             playerCells[cellIndex - 1].classList.add('validSelection')
             playerCells[cellIndex + 1].classList.add('validSelection')
             playerCells[cellIndex + 2].classList.add('validSelection')
+            return true
           }
         } else if (shipSelectedSize === 5 && (Math.floor(cellIndex % rowWidth > 1) && (Math.floor(cellIndex % rowWidth) < 8))) {
           if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 2].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated') && !playerCells[cellIndex + 1].classList.contains('nowValidated') && !playerCells[cellIndex + 2].classList.contains('nowValidated')) {
@@ -310,21 +316,27 @@ function init() {
             playerCells[cellIndex - 1].classList.add('validSelection')
             playerCells[cellIndex + 1].classList.add('validSelection')
             playerCells[cellIndex + 2].classList.add('validSelection')
+            return true
           }
         } else if (shipSelectedSize === 2 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 10)) {
           if (!playerCells[cellIndex].classList.contains('nowValidated') && !playerCells[cellIndex - 1].classList.contains('nowValidated')) {
             playerCells[cellIndex].classList.add('validSelection')
             playerCells[cellIndex - 1].classList.add('validSelection')
+            return true
           }
         }
       }
     }
+    // disable grid so no non-validated cells can be added!
+    playerGrid.classList.add('grid-disabled')
   }
 
   // generate players chosen positions for each ship + udpate the playerShips object
   function createPlayerPositions(){
     // loop through playerCells and identify which playerCells are selected and have validSelection class
     // then add indexs to the ships array
+
+    // WORK BUT HAD ISSUE CLICKING ON VALIDATED
     playerCells.forEach(cell => {
       if (cell.classList.contains('validSelection')) {
         playerShips[shipCount].locations.push(parseInt(cell.dataset.index))
@@ -339,10 +351,18 @@ function init() {
     } else if (shipCount === 4) {
       playerIsReady()
     }
+
+    // remove ability to add again immediately
+    playerGrid.classList.add('grid-disabled')
+    
+    // console.log(playerShips[shipCount])
+
   }
 
   function removePosition(){
-    // this function resets the check for validation as the mouse moves away (out) from the selected playerCells
+    // this function resets the check for validation as the mouse moves out from the selected playerCells
+    // playerGrid.click(() => true)
+    playerGrid.classList.remove('grid-disabled')
     playerCells.forEach(cell => cell.classList.remove('validSelection'))
   }
 
@@ -365,8 +385,8 @@ function init() {
     playersTurn = true
     playerGrid.classList.add('grid-disabled')
     computerGrid.classList.remove('grid-disabled')
-    playerSpan.innerText = 'Contestents ready!'
-    computerSpan.innerText = 'Contestents ready!'
+    playerSpan.innerText = '"TRUMP: GREAT JOB. Now go kick some Commie ass"'
+    computerSpan.innerText = '"KIM: In ur dreams orange boy bwahahaha"'
     console.log('Player Ships ->', playerShips)
     console.log('Computer Ships ->', computerShips)
   }
@@ -386,7 +406,7 @@ function init() {
       playersTurn = false
       computerTurn()
     } else {
-      playerSpan.innerText = 'You already tried that spot! Try again...'
+      computerSpan.innerText = 'Bwhwhwa YOU ALREADY TRIED THAT SPOT, MINION'
     }
     // console.log('Array of attempted shots ->', attemptedShots)
     
