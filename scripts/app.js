@@ -62,6 +62,7 @@ function init() {
   const computerCells = []
   let attemptedShots = [] // tracks all cells that Player has clicked.
   let attemptedShotsCPU = []
+  let computerLastHunt
 
   // Game variables
   let gameStarted = false
@@ -170,7 +171,7 @@ function init() {
     // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
     if (shipDirection === 'vertical') {
       if (shipSize === 3 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 9)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated') && !computerCells[cellIndex + 10].classList.contains('nowValidated')){
+        if (!computerCells[cellIndex].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 10].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 10].classList.contains('nowValidatedCPU')){
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 10].classList.add('validSelection')
           computerCells[cellIndex + 10].classList.add('validSelection')
@@ -180,7 +181,7 @@ function init() {
           return true
         }
       } else if (shipSize === 4 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated') && !computerCells[cellIndex + 10].classList.contains('nowValidated') && !computerCells[cellIndex + 20].classList.contains('nowValidated')){
+        if (!computerCells[cellIndex].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 10].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 10].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 20].classList.contains('nowValidatedCPU')){
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 10].classList.add('validSelection')
           computerCells[cellIndex + 10].classList.add('validSelection')
@@ -190,7 +191,7 @@ function init() {
           return true
         }
       } else if (shipSize === 2 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 10)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated')) {
+        if (!computerCells[cellIndex].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 10].classList.contains('nowValidatedCPU')) {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 10].classList.add('validSelection')
           // tempArr = [cellIndex - 10, cellIndex]
@@ -198,7 +199,7 @@ function init() {
           return true
         }
       } else if (shipSize === 5 && (Math.floor(cellIndex / rowWidth) > 1) && ((Math.floor(cellIndex / rowWidth)) < 8)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 20].classList.contains('nowValidated') && !computerCells[cellIndex - 10].classList.contains('nowValidated') && !computerCells[cellIndex + 10].classList.contains('nowValidated') && !computerCells[cellIndex + 20].classList.contains('nowValidated')) {
+        if (!computerCells[cellIndex].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 20].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 10].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 10].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 20].classList.contains('nowValidatedCPU')) {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 20].classList.add('validSelection')
           computerCells[cellIndex - 10].classList.add('validSelection')
@@ -211,7 +212,7 @@ function init() {
       }
     } else if (shipDirection === 'horizontal') {
       if (shipSize === 3 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 9)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated') && !computerCells[cellIndex + 1].classList.contains('nowValidated')) {
+        if (!computerCells[cellIndex].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 1].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 1].classList.contains('nowValidatedCPU')) {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 1].classList.add('validSelection')
           computerCells[cellIndex + 1].classList.add('validSelection')
@@ -220,7 +221,7 @@ function init() {
           return true
         }
       } else if (shipSize === 4 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 8)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated') && !computerCells[cellIndex + 1].classList.contains('nowValidated') && !computerCells[cellIndex + 2].classList.contains('nowValidated')){
+        if (!computerCells[cellIndex].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 1].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 1].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 2].classList.contains('nowValidatedCPU')){
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 1].classList.add('validSelection')
           computerCells[cellIndex + 1].classList.add('validSelection')
@@ -230,7 +231,7 @@ function init() {
           return true
         }
       } else if (shipSize === 5 && (Math.floor(cellIndex % rowWidth > 1) && (Math.floor(cellIndex % rowWidth) < 8))) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 2].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated') && !computerCells[cellIndex + 1].classList.contains('nowValidated') && !computerCells[cellIndex + 2].classList.contains('nowValidated')) {
+        if (!computerCells[cellIndex].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 2].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 1].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 1].classList.contains('nowValidatedCPU') && !computerCells[cellIndex + 2].classList.contains('nowValidatedCPU')) {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 2].classList.add('validSelection')
           computerCells[cellIndex - 1].classList.add('validSelection')
@@ -241,7 +242,7 @@ function init() {
           return true
         }
       } else if (shipSize === 2 && (Math.floor(cellIndex % rowWidth)) && (Math.floor(cellIndex % rowWidth) < 10)) {
-        if (!computerCells[cellIndex].classList.contains('nowValidated') && !computerCells[cellIndex - 1].classList.contains('nowValidated')) {
+        if (!computerCells[cellIndex].classList.contains('nowValidatedCPU') && !computerCells[cellIndex - 1].classList.contains('nowValidatedCPU')) {
           computerCells[cellIndex].classList.add('validSelection')
           computerCells[cellIndex - 1].classList.add('validSelection')
           // tempArr = [cellIndex - 1, cellIndex]
@@ -260,7 +261,7 @@ function init() {
     // then add indexs to the ships array
     computerCells.forEach(cell => {
       if (cell.classList.contains('validSelection')) {
-        cell.classList.add('nowValidated')
+        cell.classList.add('nowValidatedCPU')
       }
     })
 
@@ -274,9 +275,8 @@ function init() {
     
     // set index of currently selected grid cell on mouse hover
     const cellIndex = parseInt(e.target.dataset.index)
-    console.log('Validation position -->', cellIndex, playersTurn, gameStarted)
 
-    if (playersTurn !== true && gameStarted === true){
+    if (playersTurn !== true && gameStarted === true && endGameWinner === 'none'){
       // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
       if (shipDirection === 'vertical') {
         if (shipSelectedSize === 3 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 9)) {
@@ -379,7 +379,9 @@ function init() {
   function removePosition(){
     // this function resets the check for validation as the mouse moves out from the selected playerCells
     // playerGrid.click(() => true)
+    // if (endGameWinner !== 'none'){
     playerGrid.classList.remove('grid-disabled')
+    // }
     playerCells.forEach(cell => cell.classList.remove('validSelection'))
   }
 
@@ -426,39 +428,110 @@ function init() {
       computerSpan.innerText = 'Bwhwhwa YOU ALREADY TRIED THAT SPOT, MINION'
     }
     // console.log('Array of attempted shots ->', attemptedShots)
-    
-  }
+  }  
 
+  // THIS VERSION WORKS! BACKUP
   // function that randomly generates computer's turn.  It will call fireShot
+  // function computerTurn() {
+    
+  //   if (endGameWinner === 'none'){
+  //     computerSpan.innerText = 'KIM: Haha my go now...'
+  //     let randomCell = pickRandomCellNumber()
+  //     setTimeout(() => {
+        
+  //       // if attemptedShot array does NOT already contain random cell, push to attemptedShots array to record shot
+  //       // then trigger the fireShot function
+  //       if (!attemptedShotsCPU.includes(randomCell)) {
+  //         attemptedShotsCPU.push(randomCell)
+  //         fireShot('computer', randomCell)
+    
+  //         // now set to players turn
+  //         playersTurn = true
+  //         // console.log('Not included in attemptedShotsCPU ->', attemptedShotsCPU)
+  //       } else {
+  //         while (attemptedShotsCPU.includes(randomCell)) {
+  //           // console.log('FAILED attemptedShotsCPU ->', randomCell)
+  //           randomCell = pickRandomCellNumber()
+  //         }
+  //         attemptedShotsCPU.push(randomCell)
+  //         fireShot('computer', randomCell)
+  //         // computerSpan.innerText = randomCell
+  //         // console.log('INCLUDED in attemptedShotsCPU ->', attemptedShotsCPU)
+  //       }
+
+  //       playerSpan.innerText = 'TRUMP: Our time to shine...'
+  //     }, '1500')
+  //   }
+  // }
+
   function computerTurn() {
     
     if (endGameWinner === 'none'){
       computerSpan.innerText = 'KIM: Haha my go now...'
-      let randomCell = pickRandomCellNumber()
+      let cellChosen
+
+      if (computerLastHunt === null){
+        cellChosen = pickRandomCellNumber()
+      } else {
+        cellChosen = computerHunt()
+        if (cellChosen === false){
+          cellChosen = pickRandomCellNumber()
+        }
+      }
+
       setTimeout(() => {
         
-        if (!attemptedShotsCPU.includes(randomCell)) {
-          // if they haven't, push to attemptedShots array to record shot, and then trigger the fireShot function
-          attemptedShotsCPU.push(randomCell)
-          fireShot('computer', randomCell)
-          // computerSpan.innerText = randomCell
+        // if attemptedShot array does NOT already contain random cell, push to attemptedShots array to record shot
+        // then trigger the fireShot function
+        if (!attemptedShotsCPU.includes(cellChosen)) {
+          attemptedShotsCPU.push(cellChosen)
+          fireShot('computer', cellChosen)
     
           // now set to players turn
           playersTurn = true
           // console.log('Not included in attemptedShotsCPU ->', attemptedShotsCPU)
         } else {
-          while (attemptedShotsCPU.includes(randomCell)) {
+          while (attemptedShotsCPU.includes(cellChosen)) {
             // console.log('FAILED attemptedShotsCPU ->', randomCell)
-            randomCell = pickRandomCellNumber()
+            cellChosen = pickRandomCellNumber()
           }
-          attemptedShotsCPU.push(randomCell)
-          fireShot('computer', randomCell)
+          attemptedShotsCPU.push(cellChosen)
+          fireShot('computer', cellChosen)
           // computerSpan.innerText = randomCell
           // console.log('INCLUDED in attemptedShotsCPU ->', attemptedShotsCPU)
         }
 
         playerSpan.innerText = 'TRUMP: Our time to shine...'
       }, '1500')
+    }
+  }
+
+  function computerHunt(){
+    const lastHitX = computerLastHunt % 10
+    const lastHitY = Math.floor(computerLastHunt / 10)
+    const possibleCells = [
+      [lastHitX - 1, lastHitY],
+      [lastHitX + 1, lastHitY],
+      [lastHitX, lastHitY - 1],
+      [lastHitX, lastHitY + 1]
+    ].filter(coords => {
+      const [x, y] = coords
+      return x >= 0 && x < 10 && y >= 0 && y < 10 && !attemptedShotsCPU.includes(y * 10 + x)
+    })
+
+    if (possibleCells.length > 0) {
+      // Choose a random nearby cell to fire upon
+      const [randomX, randomY] = possibleCells[Math.floor(Math.random() * possibleCells.length)]
+      return randomY * 10 + randomX
+    } else {
+      // No nearby cells available, switch back to "random" mode
+      computerLastHunt = null
+      // let randomCell = pickRandomCellNumber()
+      // while (attemptedShotsCPU.includes(randomCell)) {
+      //   randomCell = pickRandomCellNumber()
+      // }
+      // return randomCell
+      return false
     }
   }
 
@@ -486,6 +559,7 @@ function init() {
           // computerSpan.innerText = `hit! ${cellFire}`
           computerSpan.innerText = 'KIM: HIT! LOL who is ur daddy now!!'
           playerCells[cellFire].classList.add('shotHit')
+          computerLastHunt = cellFire
         }
       } else if (locateShip.health === 1) {
         locateShip.health = 0
@@ -495,6 +569,7 @@ function init() {
         } else {
           computerSpan.innerText = `KIM: Hope u not miss ur ${locateShip.name} LOL`
           playerCells[cellFire].classList.add('shotHit')
+          computerLastHunt = null
         }
         checkEndGame(user)
       }
@@ -507,6 +582,7 @@ function init() {
         // computerSpan.innerText = `miss! ${cellFire}`
         computerSpan.innerText = 'KIM: MISS! Failure is not an option!'
         playerCells[cellFire].classList.add('shotMissed')
+        // computerLastHunt = null
       }
     }
 
@@ -556,12 +632,15 @@ function init() {
     startBtn.innerText = 'Reset'
     // gameStarted = false
     computerGrid.classList.add('grid-disabled')
+    playerGrid.classList.add('grid-disabled')
+
+    // endGameWinner = 'none'
   }
 
   // not MVP
   function resetGame() {
 
-    // resetting Ships objects
+    // resetting Ships objects (there is a better way of reusable code here but NO time!)
     playerShips[0].health = 5
     playerShips[1].health = 4
     playerShips[2].health = 3
@@ -589,12 +668,12 @@ function init() {
 
     computerCells.forEach(cell => {
       cell.classList.remove('validSelection')
-      cell.classList.remove('nowValidated')
+      cell.classList.remove('nowValidatedCPU')
       cell.classList.remove('shotHit')
       cell.classList.remove('shotMissed')
     })
 
-    // resetting variables
+    // resetting variables back to first counts
     shipSelectedSize = playerShips[0].size
     shipCount = 0
 
