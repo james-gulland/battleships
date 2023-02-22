@@ -72,11 +72,18 @@ function init() {
 
   function startGame(){
     playerGrid.classList.remove('grid-disabled')
-    playerSpan.innerText = '"TRUMP: OK patriots, time to deploy our ships!"'
     createComputerPositions()
-    computerSpan.innerText = '"I deployed already NOOB LOL"'
-    console.log('Player Ships ->', playerShips)
-    console.log('Computer Ships ->', computerShips)
+    
+    setTimeout(() => {
+      playerSpan.innerText = '"TRUMP: Use LEFT or RIGHT arrow keys to rotate"'
+      computerSpan.innerText = '"KIM: u too fat to rotate LMFAO"'
+    }, '4000')
+
+    playerSpan.innerText = '"TRUMP: OK patriots, time to deploy the ships!"'
+    computerSpan.innerText = '"KIM: I deployed mine already NOOB LOL"'
+    
+    // console.log('Player Ships ->', playerShips)
+    // console.log('Computer Ships ->', computerShips)
     gameStarted = true
     startBtn.disabled = true
   }
@@ -386,7 +393,7 @@ function init() {
     playerGrid.classList.add('grid-disabled')
     computerGrid.classList.remove('grid-disabled')
     playerSpan.innerText = '"TRUMP: GREAT JOB. Now go kick some Commie ass"'
-    computerSpan.innerText = '"KIM: In ur dreams orange boy bwahahaha"'
+    computerSpan.innerText = '"KIM: Come at me BRO bwhahaha"'
     console.log('Player Ships ->', playerShips)
     console.log('Computer Ships ->', computerShips)
   }
@@ -414,33 +421,35 @@ function init() {
 
   // function that randomly generates computer's turn.  It will call fireShot
   function computerTurn() {
-    computerSpan.innerText = 'Computers go...'
-    let randomCell = pickRandomCellNumber()
-    setTimeout(() => {
-      
-      if (!attemptedShotsCPU.includes(randomCell)) {
-        // if they haven't, push to attemptedShots array to record shot, and then trigger the fireShot function
-        attemptedShotsCPU.push(randomCell)
-        fireShot('computer', randomCell)
-        // computerSpan.innerText = randomCell
-  
-        // now set to players turn
-        playersTurn = true
-        // console.log('Not included in attemptedShotsCPU ->', attemptedShotsCPU)
-      } else {
-        while (attemptedShotsCPU.includes(randomCell)) {
-          // console.log('FAILED attemptedShotsCPU ->', randomCell)
-          randomCell = pickRandomCellNumber()
-        }
-        attemptedShotsCPU.push(randomCell)
-        fireShot('computer', randomCell)
-        // computerSpan.innerText = randomCell
-        // console.log('INCLUDED in attemptedShotsCPU ->', attemptedShotsCPU)
-      }
-
-      playerSpan.innerText = 'Players go...'
-    }, '1500')
     
+    if (endGameWinner === 'none'){
+      computerSpan.innerText = 'KIM: Haha my go now...'
+      let randomCell = pickRandomCellNumber()
+      setTimeout(() => {
+        
+        if (!attemptedShotsCPU.includes(randomCell)) {
+          // if they haven't, push to attemptedShots array to record shot, and then trigger the fireShot function
+          attemptedShotsCPU.push(randomCell)
+          fireShot('computer', randomCell)
+          // computerSpan.innerText = randomCell
+    
+          // now set to players turn
+          playersTurn = true
+          // console.log('Not included in attemptedShotsCPU ->', attemptedShotsCPU)
+        } else {
+          while (attemptedShotsCPU.includes(randomCell)) {
+            // console.log('FAILED attemptedShotsCPU ->', randomCell)
+            randomCell = pickRandomCellNumber()
+          }
+          attemptedShotsCPU.push(randomCell)
+          fireShot('computer', randomCell)
+          // computerSpan.innerText = randomCell
+          // console.log('INCLUDED in attemptedShotsCPU ->', attemptedShotsCPU)
+        }
+
+        playerSpan.innerText = 'TRUMP: Our time to shine...'
+      }, '1500')
+    }
   }
 
   // determine if a missile has hit a ship or missed.  used for both player and CPU.  
@@ -460,29 +469,33 @@ function init() {
       if (locateShip.health > 1) {
         locateShip.health--
         if (user === 'player'){
-          playerSpan.innerText = `hit! ${cellFire}`
+          // playerSpan.innerText = `hit! ${cellFire}`
+          playerSpan.innerText = 'TRUMP: HIT! He really felt that one!!'
           computerCells[cellFire].classList.add('shotHit')
         } else {
-          computerSpan.innerText = `hit! ${cellFire}`
+          // computerSpan.innerText = `hit! ${cellFire}`
+          computerSpan.innerText = 'KIM: HIT! LOL who is ur daddy now!!'
           playerCells[cellFire].classList.add('shotHit')
         }
       } else if (locateShip.health === 1) {
         locateShip.health = 0
         if (user === 'player'){
-          playerSpan.innerText = `you sunk mandem ${locateShip.name}`
+          playerSpan.innerText = `TRUMP: GO TEAM AMERICA! We sunk his ${locateShip.name}`
           computerCells[cellFire].classList.add('shotHit')
         } else {
-          computerSpan.innerText = `you sunk mandem ${locateShip.name}`
+          computerSpan.innerText = `KIM: Hope u not miss ur ${locateShip.name} LOL`
           playerCells[cellFire].classList.add('shotHit')
         }
         checkEndGame(user)
       }
     } else {
       if (user === 'player'){
-        playerSpan.innerText = `miss! ${cellFire}`
+        // playerSpan.innerText = `miss! ${cellFire}`
+        playerSpan.innerText = 'TRUMP: MISS! Recalibrate the Freedom missles!'
         computerCells[cellFire].classList.add('shotMissed')
       } else {
-        computerSpan.innerText = `miss! ${cellFire}`
+        // computerSpan.innerText = `miss! ${cellFire}`
+        computerSpan.innerText = 'KIM: MISS! Failure is not an option!'
         playerCells[cellFire].classList.add('shotMissed')
       }
     }
@@ -513,11 +526,25 @@ function init() {
   }
 
   function endGame(user){
+    
+    // updating global variable to halt actions across the app
     endGameWinner = user
+
+    // update the spans
+    if (endGameWinner === 'player'){
+      playerSpan.innerText = 'TRUMP: GAME OVER! God Bless America!'
+      computerSpan.innerText = 'KIM: NOOOOOO how u cheat??'
+    } else {
+      computerSpan.innerText = 'KIM: GAME OVER! Pleasure is all mine!'
+      playerSpan.innerText = 'TRUMP: I didnt want to play anyway'
+    }
     console.log('We have a winner:', endGameWinner)
+    
+    // disable all the things
     startBtn.disabled = false
+    startBtn.innerText = 'Reset'
     gameStarted = false
-    alert('We have a winner:', endGameWinner)
+    computerGrid.classList.add('grid-disabled')
   }
 
   // not MVP
