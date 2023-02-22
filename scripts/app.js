@@ -376,12 +376,9 @@ function init() {
 
   }
 
+  // this function resets the check for validation as the mouse moves out from the selected playerCells
   function removePosition(){
-    // this function resets the check for validation as the mouse moves out from the selected playerCells
-    // playerGrid.click(() => true)
-    // if (endGameWinner !== 'none'){
     playerGrid.classList.remove('grid-disabled')
-    // }
     playerCells.forEach(cell => cell.classList.remove('validSelection'))
   }
 
@@ -412,20 +409,30 @@ function init() {
 
   // triggered once it is player's turn + clicked on computer grid
   function playerTurn(e) {
-    // capture the cell that has clicked on
-    const cellFire = parseInt(e.target.dataset.index)
     
-    // first check to make sure they haven't attempted shot already (does nothing)
-    if (!attemptedShots.includes(cellFire)) {
-      // if they haven't, push to attemptedShots array to record shot, and then trigger the fireShot function
-      attemptedShots.push(cellFire)
-      fireShot('player', cellFire)
+    if (endGameWinner === 'none'){
+      // capture the cell that has clicked on
+      const cellFire = parseInt(e.target.dataset.index)
+      computerGrid.classList.add('grid-disabled')
+      
+      if (!attemptedShots.includes(cellFire)) {
+        // if they haven't, push to attemptedShots array to record shot, and then trigger the fireShot function
+        attemptedShots.push(cellFire)
+        fireShot('player', cellFire)
 
-      // now set to computers turn
-      playersTurn = false
-      computerTurn()
-    } else {
-      computerSpan.innerText = 'Bwhwhwa YOU ALREADY TRIED THAT SPOT, MINION'
+        // now set to computers turn
+        playersTurn = false
+        computerTurn()
+
+      } else {
+        computerSpan.innerText = 'Bwhwhwa YOU ALREADY TRIED THAT SPOT, MINION'
+      }
+
+      setTimeout(() => {
+        // first check to make sure they haven't attempted shot already (does nothing)
+        computerGrid.classList.remove('grid-disabled')
+      }, '2000')
+
     }
     // console.log('Array of attempted shots ->', attemptedShots)
   }  
@@ -467,6 +474,7 @@ function init() {
   function computerTurn() {
     
     if (endGameWinner === 'none'){
+      // computerGrid.classList.add('grid-disabled')
       computerSpan.innerText = 'KIM: Haha my go now...'
       let cellChosen
 
@@ -480,7 +488,7 @@ function init() {
       }
 
       setTimeout(() => {
-        
+        // computerGrid.classList.add('grid-disabled')
         // if attemptedShot array does NOT already contain random cell, push to attemptedShots array to record shot
         // then trigger the fireShot function
         if (!attemptedShotsCPU.includes(cellChosen)) {
@@ -497,12 +505,17 @@ function init() {
           }
           attemptedShotsCPU.push(cellChosen)
           fireShot('computer', cellChosen)
+          // computerGrid.classList.remove('grid-disabled')
           // computerSpan.innerText = randomCell
           // console.log('INCLUDED in attemptedShotsCPU ->', attemptedShotsCPU)
         }
 
-        playerSpan.innerText = 'TRUMP: Our time to shine...'
+        // computerGrid.classList.remove('grid-disabled')
+        if (endGameWinner === 'none'){
+          playerSpan.innerText = 'TRUMP: Our time to shine...'
+        }
       }, '1500')
+      
     }
   }
 

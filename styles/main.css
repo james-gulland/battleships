@@ -3,7 +3,7 @@
 }
 
 body {
-  height: 100svh;
+  height: 90vh;
   background-image: url(../assets/bg-image.jpg);
   background-repeat: no-repeat;
   background-position: center;
@@ -165,7 +165,7 @@ button {
   font-size: 26px;
   text-shadow: 1px 1px 4px #000000;
   border-radius: 70%;
-  box-shadow: 1px 2px 4px grey;
+  box-shadow: 1px 2px 12px grey;
   transition: all 0.2s ease;
 }
 
