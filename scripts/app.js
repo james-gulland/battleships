@@ -60,8 +60,8 @@ function init() {
   // Player and computer variables
   const playerCells = []
   const computerCells = []
-  const attemptedShots = [] // tracks all cells that Player has clicked.
-  const attemptedShotsCPU = []
+  let attemptedShots = [] // tracks all cells that Player has clicked.
+  let attemptedShotsCPU = []
 
   // Game variables
   let gameStarted = false
@@ -69,6 +69,16 @@ function init() {
   let endGameWinner = 'none'
 
   // ! EVENTS
+
+  function gameInit(){
+    console.log('Game started previously?', gameStarted)
+    if (gameStarted === false){
+      startGame()
+    } else {
+      console.log('Reset initiated')
+      resetGame()
+    }
+  }
 
   function startGame(){
     playerGrid.classList.remove('grid-disabled')
@@ -264,7 +274,7 @@ function init() {
     
     // set index of currently selected grid cell on mouse hover
     const cellIndex = parseInt(e.target.dataset.index)
-    // console.log(cellIndex)
+    console.log('Validation position -->', cellIndex, playersTurn, gameStarted)
 
     if (playersTurn !== true && gameStarted === true){
       // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
@@ -500,8 +510,9 @@ function init() {
       }
     }
 
-    console.log('Computer Ships ->', computerShips)
-    console.log('Player Ships ->', playerShips)
+    // USEFUL LOGGING HERE:
+    // console.log('Computer Ships ->', computerShips)
+    // console.log('Player Ships ->', playerShips)
 
   }
 
@@ -532,10 +543,10 @@ function init() {
 
     // update the spans
     if (endGameWinner === 'player'){
-      playerSpan.innerText = 'TRUMP: GAME OVER! God Bless America!'
+      playerSpan.innerText = 'TRUMP: GAME OVER! God Bless America!!'
       computerSpan.innerText = 'KIM: NOOOOOO how u cheat??'
     } else {
-      computerSpan.innerText = 'KIM: GAME OVER! Pleasure is all mine!'
+      computerSpan.innerText = 'KIM: GAME OVER! Down with capitalism!!'
       playerSpan.innerText = 'TRUMP: I didnt want to play anyway'
     }
     console.log('We have a winner:', endGameWinner)
@@ -543,13 +554,62 @@ function init() {
     // disable all the things
     startBtn.disabled = false
     startBtn.innerText = 'Reset'
-    gameStarted = false
+    // gameStarted = false
     computerGrid.classList.add('grid-disabled')
   }
 
   // not MVP
   function resetGame() {
 
+    // resetting Ships objects
+    playerShips[0].health = 5
+    playerShips[1].health = 4
+    playerShips[2].health = 3
+    playerShips[3].health = 3
+    playerShips[4].health = 2
+    playerShips.forEach(ship => ship.locations = [])
+    
+    computerShips[0].health = 5
+    computerShips[1].health = 4
+    computerShips[2].health = 3
+    computerShips[3].health = 3
+    computerShips[4].health = 2
+    computerShips.forEach(ship => ship.locations = [])
+
+    console.log('Resetting Ship PLAYER:', playerShips)
+    console.log('Resetting Ship CPU:', computerShips)
+
+    // resetting HTML classes so wont show on grid
+    playerCells.forEach(cell => {
+      cell.classList.remove('validSelection')
+      cell.classList.remove('nowValidated')
+      cell.classList.remove('shotHit')
+      cell.classList.remove('shotMissed')
+    })
+
+    computerCells.forEach(cell => {
+      cell.classList.remove('validSelection')
+      cell.classList.remove('nowValidated')
+      cell.classList.remove('shotHit')
+      cell.classList.remove('shotMissed')
+    })
+
+    // resetting variables
+    shipSelectedSize = playerShips[0].size
+    shipCount = 0
+
+    // resetting temp arrays
+    attemptedShots = []
+    attemptedShotsCPU = []
+
+    // resetting game switches
+    playersTurn = false
+    endGameWinner = 'none'
+
+    playerGrid.classList.remove('grid-disabled')
+
+    // run start game function
+    startGame()
   }
 
 
@@ -566,7 +626,7 @@ function init() {
   playerGrid.classList.add('grid-disabled')
   computerGrid.classList.add('grid-disabled')
 
-  startBtn.addEventListener('click', startGame)
+  startBtn.addEventListener('click', gameInit)
   playerCells.forEach(cell => cell.addEventListener('mouseout', removePosition))
   playerCells.forEach(cell => cell.addEventListener('mouseover', validatePosition))
   playerCells.forEach(cell => cell.addEventListener('click', createPlayerPositions))
