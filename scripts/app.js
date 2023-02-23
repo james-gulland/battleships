@@ -43,6 +43,7 @@ function init() {
   const startBtn = document.querySelector('#start-btn')
   const playerScoreSpan = document.querySelector('#you')
   const cpuScoreSpan = document.querySelector('#cpu')
+  const audio = document.querySelector('#audio')
 
   // Ship variables
   // const playerShipToStart = 0
@@ -96,6 +97,9 @@ function init() {
     // console.log('Computer Ships ->', computerShips)
     gameStarted = true
     startBtn.disabled = true
+
+    // play sound
+    playAudio('player')
   }
 
   // creates each grid when page is loaded and initialised. 10x10 with unique indexes.
@@ -353,6 +357,8 @@ function init() {
     console.log(gameStarted)
 
     if (gameStarted){
+      
+      playAudio('set')
       // WORK BUT HAD ISSUE CLICKING ON VALIDATED
       playerCells.forEach(cell => {
         if (cell.classList.contains('validSelection')) {
@@ -360,7 +366,7 @@ function init() {
           cell.classList.add('nowValidated')
         }
       })
-      
+
       // console.log(playerShips[shipCount])
       if (shipCount < 4){
         shipCount++
@@ -407,6 +413,12 @@ function init() {
     computerGrid.classList.remove('grid-disabled')
     playerSpan.innerText = '"TRUMP: GREAT JOB. Now go kick some Commie ass"'
     computerSpan.innerText = '"KIM: Come at me BRO bwhahaha"'
+
+    setTimeout(() => {
+      playAudio('start')
+    }, '1500')
+    
+
     console.log('Player Ships ->', playerShips)
     console.log('Computer Ships ->', computerShips)
   }
@@ -541,10 +553,12 @@ function init() {
           // playerSpan.innerText = `hit! ${cellFire}`
           playerSpan.innerText = 'TRUMP: HIT! He really felt that one!!'
           computerCells[cellFire].classList.add('shotHit')
+          playAudio('hit')
         } else {
           // computerSpan.innerText = `hit! ${cellFire}`
           computerSpan.innerText = 'KIM: HIT! LOL who is ur daddy now!!'
           playerCells[cellFire].classList.add('shotHit')
+          playAudio('hit')
           computerLastHunt = cellFire
         }
       } else if (locateShip.health === 1) {
@@ -552,10 +566,12 @@ function init() {
         if (user === 'player'){
           playerSpan.innerText = `TRUMP: GO TEAM AMERICA! We sunk his ${locateShip.name}`
           computerCells[cellFire].classList.add('shotHit')
+          playAudio('sink')
           updateScore(computerShips, cpuScoreSpan)
         } else {
           computerSpan.innerText = `KIM: Hope u not miss ur ${locateShip.name} LOL`
           playerCells[cellFire].classList.add('shotHit')
+          playAudio('sink')
           updateScore(playerShips, playerScoreSpan)
           computerLastHunt = null
         }
@@ -566,10 +582,12 @@ function init() {
         // playerSpan.innerText = `miss! ${cellFire}`
         playerSpan.innerText = 'TRUMP: MISS! Recalibrate the Freedom missles!'
         computerCells[cellFire].classList.add('shotMissed')
+        playAudio('miss')
       } else {
         // computerSpan.innerText = `miss! ${cellFire}`
         computerSpan.innerText = 'KIM: MISS! Failure is not an option!'
         playerCells[cellFire].classList.add('shotMissed')
+        playAudio('miss')
         // computerLastHunt = null
       }
     }
@@ -588,6 +606,11 @@ function init() {
     } else {
       span.innerText = 'CPU ' + '🚢 '.repeat(shipsLeft)
     }
+  }
+
+  function playAudio(sound){
+    audio.src = `assets/${sound}.wav`
+    audio.play()
   }
 
   // check game status: whether anyone has won yet
@@ -622,12 +645,16 @@ function init() {
       playerGrid.style.animation = 'none'
       removeAllClass(playerCells)
       computerSpan.innerText = 'KIM: NOOOOOO how u cheat??'
+      setTimeout(() => {
+        playAudio('fired')
+      }, '1500')
+
     } else {
-      computerSpan.innerText = 'KIM: GAME OVER! Down with capitalism!!'
+      computerSpan.innerText = 'KIM: GAME OVER! Down with American capitalism!!'
       computerGrid.style.backgroundImage = "url('assets/kimwin.gif')"
       computerGrid.style.animation = 'none'
       removeAllClass(computerCells)
-      playerSpan.innerText = 'TRUMP: I didnt want to play anyway'
+      playerSpan.innerText = 'TRUMP: FAKE NEWS. I never wanted to play anyway'
     }
     console.log('We have a winner:', endGameWinner)
     
