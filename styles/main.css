@@ -123,9 +123,9 @@ span {
   cursor: none;
 }
 
-.grid-win {
+/* .grid-win {
   background-color: green;
-}
+} */
 
 #computerSpan, #playerSpan {
   padding-top: 10px;
@@ -141,7 +141,7 @@ span {
 }
 
 .nowValidatedCPU {
-  background-color: rgba(0, 0, 0, 100%);
+  background-color: rgba(0, 0, 0, 0%);
 }
 
 .shotHit {

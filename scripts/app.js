@@ -647,7 +647,7 @@ function init() {
       computerSpan.innerText = 'KIM: NOOOOOO how u cheat??'
       setTimeout(() => {
         playAudio('fired')
-      }, '1500')
+      }, '2000')
 
     } else {
       computerSpan.innerText = 'KIM: GAME OVER! Down with American capitalism!!'
