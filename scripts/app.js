@@ -2,23 +2,12 @@ function init() {
 
   // ! ELEMEMTS & VARIABLES
 
-  // 1. Page Load: Game initiation
-  // - Grids: generating two 10x10 grids (player and CPU) using JS DOM manipulation.
-  // - Each square on the grid has an associated number (0 - 99) - which will be used to reference when shot is fired.
-
-  // - Ships: defining const for all types of ships (i.e Carrier, Destroyer) and size of ship on grid.
-  // - Player/CPU: defining an empty array/object of where all ship positions are on the grid.  
-  // -- DO I NEED A CLASS TO MANAGE OVERALL ENVIRONMENT or over complicating it?
-
-  // - Start: linking HTML button that will activate the game, initially into 'game setup' mode.
-  // - Controls: defining controls - pressing 'Left' or 'Right' arrow will rotate ships when positioning.
-  // - Game Status: defining a switch on who's turn it is; either Player or CPU + defining if game has been won or not.
-  // - NOTE: no timer defined - not expecting to be time-based (i.e. unlimited time)
-
   // GLOBAL VARIABLES
 
   // each ship is represented by an object with a name, a size, and an empty array for its locations.
   // locations will show the cell dataset index
+  // health will be decremented when hit
+
   const playerShips = [
     { name: 'Carrier', size: 5, health: 5, locations: [] },
     { name: 'Battleship', size: 4, health: 4, locations: [] },
@@ -35,7 +24,7 @@ function init() {
     { name: 'Patrol', size: 2, health: 2, locations: [] }
   ]
 
-  //  Defining all the HTML elements as variables to use
+  //  Defining all the HTML elements as variables to manipulate
   const playerGrid = document.querySelector('#playerGrid')
   const computerGrid = document.querySelector('#computerGrid')
   const playerSpan = document.querySelector('#playerSpan')
@@ -57,11 +46,11 @@ function init() {
   const cellCount = rowWidth * colHeight
 
   // Player and computer variables
-  const playerCells = []
-  const computerCells = []
-  let attemptedShots = [] // tracks all cells that Player has clicked.
-  let attemptedShotsCPU = []
-  let computerLastHunt
+  const playerCells = []      // tracks player Cells
+  const computerCells = []    // tracks CPU cells
+  let attemptedShots = []     // tracks all cells that Player has previously chosen
+  let attemptedShotsCPU = []  // tracks all cells that Player has previously chosen
+  let computerLastHunt        // tracks last CPU hit to be used for 'hunt' mode
 
   // Defining game state variables
   let gameStarted = false     // has game started or not
@@ -354,9 +343,9 @@ function init() {
   function createPlayerPositions(){
     // loop through playerCells and identify which playerCells are selected and have validSelection class
     // then add indexs to the ships array
-    console.log(gameStarted)
+    // console.log(gameStarted)
 
-    if (gameStarted){
+    if (gameStarted && !deployed){
       
       playAudio('set')
       // WORK BUT HAD ISSUE CLICKING ON VALIDATED
@@ -383,9 +372,9 @@ function init() {
 
   // this function resets the check for validation as the mouse moves out from the selected playerCells
   function removePosition(){
-    console.log(gameStarted, playersTurn, endGameWinner)
+    // console.log(gameStarted, playersTurn, endGameWinner)
     // if (gameStarted === true && playersTurn === false){
-    if (deployed !== true){
+    if (!deployed){
       playerGrid.classList.remove('grid-disabled')
       playerCells.forEach(cell => cell.classList.remove('validSelection'))
     }
@@ -425,7 +414,7 @@ function init() {
 
   // triggered once it is player's turn + clicked on computer grid
   function playerTurn(e) {
-    console.log(playersTurn, endGameWinner)
+    // console.log(playersTurn, endGameWinner)
     playerGrid.classList.add('grid-disabled')
     if (endGameWinner === 'none' && playersTurn === true){
       // capture the cell that has clicked on
@@ -442,7 +431,7 @@ function init() {
         computerTurn()
 
       } else {
-        computerSpan.innerText = 'Bwhwhwa YOU ALREADY TRIED THAT SPOT, MINION'
+        computerSpan.innerText = 'KIM: YOU ALREADY TRIED THAT SPOT, MINION'
       }
 
       setTimeout(() => {
@@ -524,11 +513,6 @@ function init() {
     } else {
       // No nearby cells available, switch back to "random" mode
       computerLastHunt = null
-      // let randomCell = pickRandomCellNumber()
-      // while (attemptedShotsCPU.includes(randomCell)) {
-      //   randomCell = pickRandomCellNumber()
-      // }
-      // return randomCell
       return false
     }
   }
@@ -600,7 +584,6 @@ function init() {
 
   function updateScore(ships, span) {
     const shipsLeft = ships.filter(ship => ship.health !== 0).length
-    console.log(ships, span)
     if (span === playerScoreSpan){
       span.innerText = 'YOU ' + '🚢 '.repeat(shipsLeft)
     } else {
@@ -641,7 +624,7 @@ function init() {
     // update the spans
     if (endGameWinner === 'player'){
       playerSpan.innerText = 'TRUMP: GAME OVER! God Bless America!!'
-      playerGrid.style.backgroundImage = "url('assets/trump-applause.gif')"
+      playerGrid.style.backgroundImage = 'url("assets/trump-applause.gif")'
       playerGrid.style.animation = 'none'
       removeAllClass(playerCells)
       computerSpan.innerText = 'KIM: NOOOOOO how u cheat??'
@@ -651,7 +634,7 @@ function init() {
 
     } else {
       computerSpan.innerText = 'KIM: GAME OVER! Down with American capitalism!!'
-      computerGrid.style.backgroundImage = "url('assets/kimwin.gif')"
+      computerGrid.style.backgroundImage = 'url("assets/kimwin.gif")'
       computerGrid.style.animation = 'none'
       removeAllClass(computerCells)
       playerSpan.innerText = 'TRUMP: FAKE NEWS. I never wanted to play anyway'
@@ -700,9 +683,9 @@ function init() {
     // resetting HTML classes so wont show on grid
     removeAllClass(playerCells)
     removeAllClass(computerCells)
-    playerGrid.style.backgroundImage = "url('assets/sea.jpeg')"
+    playerGrid.style.backgroundImage = 'url("assets/sea.jpeg")'
     playerGrid.style.animation = 'animate 60s linear infinite'
-    computerGrid.style.backgroundImage = "url('assets/sea.jpeg')"
+    computerGrid.style.backgroundImage = 'url("assets/sea.jpeg")'
     computerGrid.style.animation = 'animate 60s linear infinite'
     updateScore(playerShips, playerScoreSpan)
     updateScore(computerShips, cpuScoreSpan)
@@ -717,8 +700,8 @@ function init() {
 
     // resetting game switches
     playersTurn = false
-    endGameWinner = 'none'
     deployed = false
+    endGameWinner = 'none'
 
     playerGrid.classList.remove('grid-disabled')
 
@@ -730,17 +713,14 @@ function init() {
 
   // ! EXECUTION
 
-  // event listeners for:
-  // 1. Start button 'click' 
-  // 2. Grid divs 'click' when taking a shot
-
   // Page Load
-  // create the grids
+  // Create the grids
   createGrid(playerGrid, playerCells)
   createGrid(computerGrid, computerCells)
   playerGrid.classList.add('grid-disabled')
   computerGrid.classList.add('grid-disabled')
 
+  // HTML executions
   startBtn.addEventListener('click', gameInit)
   playerCells.forEach(cell => cell.addEventListener('mouseout', removePosition))
   playerCells.forEach(cell => cell.addEventListener('mouseover', validatePosition))

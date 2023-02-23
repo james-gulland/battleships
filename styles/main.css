@@ -93,7 +93,7 @@ span {
   animation: animate 100s linear infinite;
 }
 
-@keyframes animate{
+@keyframes animate {
   0%{
     background-position: top 80px;
   }
@@ -122,10 +122,6 @@ span {
   pointer-events: none;
   cursor: none;
 }
-
-/* .grid-win {
-  background-color: green;
-} */
 
 #computerSpan, #playerSpan {
   padding-top: 10px;
