@@ -633,9 +633,15 @@ function init() {
     // update the spans
     if (endGameWinner === 'player'){
       playerSpan.innerText = 'TRUMP: GAME OVER! God Bless America!!'
+      playerGrid.style.backgroundImage = "url('assets/trump-applause.gif')"
+      playerGrid.style.animation = 'none'
+      removeAllClass(playerCells)
       computerSpan.innerText = 'KIM: NOOOOOO how u cheat??'
     } else {
       computerSpan.innerText = 'KIM: GAME OVER! Down with capitalism!!'
+      computerGrid.style.backgroundImage = "url('assets/kimwin.gif')"
+      computerGrid.style.animation = 'none'
+      removeAllClass(computerCells)
       playerSpan.innerText = 'TRUMP: I didnt want to play anyway'
     }
     console.log('We have a winner:', endGameWinner)
@@ -648,6 +654,15 @@ function init() {
     playerGrid.classList.add('grid-disabled')
 
     // endGameWinner = 'none'
+  }
+
+  function removeAllClass(cells) {
+    cells.forEach(cell => {
+      cell.classList.remove('validSelection')
+      cell.classList.remove('nowValidated')
+      cell.classList.remove('shotHit')
+      cell.classList.remove('shotMissed')
+    })
   }
 
   // not MVP
@@ -672,19 +687,12 @@ function init() {
     console.log('Resetting Ship CPU:', computerShips)
 
     // resetting HTML classes so wont show on grid
-    playerCells.forEach(cell => {
-      cell.classList.remove('validSelection')
-      cell.classList.remove('nowValidated')
-      cell.classList.remove('shotHit')
-      cell.classList.remove('shotMissed')
-    })
-
-    computerCells.forEach(cell => {
-      cell.classList.remove('validSelection')
-      cell.classList.remove('nowValidatedCPU')
-      cell.classList.remove('shotHit')
-      cell.classList.remove('shotMissed')
-    })
+    removeAllClass(playerCells)
+    removeAllClass(computerCells)
+    playerGrid.style.backgroundImage = "url('assets/sea.jpeg')"
+    playerGrid.style.animation = 'animate 60s linear infinite'
+    computerGrid.style.backgroundImage = "url('assets/sea.jpeg')"
+    computerGrid.style.animation = 'animate 60s linear infinite'
 
     // resetting variables back to first counts
     shipSelectedSize = playerShips[0].size
@@ -701,6 +709,7 @@ function init() {
     playerGrid.classList.remove('grid-disabled')
 
     // run start game function
+    startBtn.innerText = 'Start'
     startGame()
   }
 
