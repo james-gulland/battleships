@@ -348,7 +348,6 @@ function init() {
     if (gameStarted && !deployed){
       
       playAudio('set')
-      // WORK BUT HAD ISSUE CLICKING ON VALIDATED
       playerCells.forEach(cell => {
         if (cell.classList.contains('validSelection')) {
           playerShips[shipCount].locations.push(parseInt(cell.dataset.index))
