@@ -15,8 +15,9 @@ function init() {
   // - Game Status: defining a switch on who's turn it is; either Player or CPU + defining if game has been won or not.
   // - NOTE: no timer defined - not expecting to be time-based (i.e. unlimited time)
 
+  // GLOBAL VARIABLES
+
   // each ship is represented by an object with a name, a size, and an empty array for its locations.
-  // each ship will get smaller in size when hit (-1)
   // locations will show the cell dataset index
   const playerShips = [
     { name: 'Carrier', size: 5, health: 5, locations: [] },
@@ -34,23 +35,20 @@ function init() {
     { name: 'Patrol', size: 2, health: 2, locations: [] }
   ]
 
-  // 2. Game Setup: Player chooses ship position on grid, define random CPU positions. Store in appropriate arrays/objects.
-  // - Storing in the empty Arrays defined above
-
-  // GLOBAL VARIABLES
-  //  Generating a grid with playerCells array
-  // const grid = document.querySelector('.grid')
+  //  Defining all the HTML elements as variables to use
   const playerGrid = document.querySelector('#playerGrid')
   const computerGrid = document.querySelector('#computerGrid')
   const playerSpan = document.querySelector('#playerSpan')
   const computerSpan = document.querySelector('#computerSpan')
   const startBtn = document.querySelector('#start-btn')
+  const playerScoreSpan = document.querySelector('#you')
+  const cpuScoreSpan = document.querySelector('#cpu')
 
   // Ship variables
   // const playerShipToStart = 0
   let shipSelectedSize = playerShips[0].size  // init with first boat in ships array
-  let shipDirection = 'vertical'  // init with first direction, either 'vertical' || 'horizontal'
-  let shipCount = 0 // ship counter to loop through ships when creating
+  let shipDirection = 'vertical'              // init with first direction, either 'vertical' || 'horizontal'
+  let shipCount = 0                           // ship counter to loop through ships when creating
 
   // Grid variables
   const rowWidth = 10
@@ -64,15 +62,16 @@ function init() {
   let attemptedShotsCPU = []
   let computerLastHunt
 
-  // Game variables
-  let gameStarted = false
-  let playersTurn = false   // sets when it is Players turn to play.  Disabled before set ships positions
-  let endGameWinner = 'none'
+  // Defining game state variables
+  let gameStarted = false     // has game started or not
+  let deployed = false        // has player deployed all their ships or not
+  let playersTurn = false     // is it players turn or not
+  let endGameWinner = 'none'  // is there a winner defined yet or not. either 'player' or 'computer'
 
   // ! EVENTS
 
   function gameInit(){
-    console.log('Game started previously?', gameStarted)
+    // console.log('Game started previously?', gameStarted)
     if (gameStarted === false){
       startGame()
     } else {
@@ -107,11 +106,10 @@ function init() {
       // Create div cell
       const cell = document.createElement('div')
 
-      // Add index as innerText
+      // Debug mode on cell positions:
       // cell.innerText = i
 
       // Data attribute representing the index
-      // cell.setAttribute('data-index', i)
       cell.dataset.index = i
 
       // Append to grid
@@ -275,8 +273,8 @@ function init() {
     
     // set index of currently selected grid cell on mouse hover
     const cellIndex = parseInt(e.target.dataset.index)
-
-    if (playersTurn !== true && gameStarted === true && endGameWinner === 'none'){
+    // console.log(playersTurn)
+    if (playersTurn !== true && gameStarted === true && endGameWinner === 'none' && deployed !== true){
       // THIS WORKS PERFECTLY but obviously needs refactoring and improved efficiency
       if (shipDirection === 'vertical') {
         if (shipSelectedSize === 3 && (Math.floor(cellIndex / rowWidth)) && ((Math.floor(cellIndex / rowWidth)) < 9)) {
@@ -352,34 +350,39 @@ function init() {
   function createPlayerPositions(){
     // loop through playerCells and identify which playerCells are selected and have validSelection class
     // then add indexs to the ships array
+    console.log(gameStarted)
 
-    // WORK BUT HAD ISSUE CLICKING ON VALIDATED
-    playerCells.forEach(cell => {
-      if (cell.classList.contains('validSelection')) {
-        playerShips[shipCount].locations.push(parseInt(cell.dataset.index))
-        cell.classList.add('nowValidated')
+    if (gameStarted){
+      // WORK BUT HAD ISSUE CLICKING ON VALIDATED
+      playerCells.forEach(cell => {
+        if (cell.classList.contains('validSelection')) {
+          playerShips[shipCount].locations.push(parseInt(cell.dataset.index))
+          cell.classList.add('nowValidated')
+        }
+      })
+      
+      // console.log(playerShips[shipCount])
+      if (shipCount < 4){
+        shipCount++
+        shipSelectedSize = playerShips[shipCount].size
+      } else if (shipCount === 4) {
+        playerIsReady()
       }
-    })
-    
-    // console.log(playerShips[shipCount])
-    if (shipCount < 4){
-      shipCount++
-      shipSelectedSize = playerShips[shipCount].size
-    } else if (shipCount === 4) {
-      playerIsReady()
+
+      // remove ability to add again immediately
+      playerGrid.classList.add('grid-disabled')
     }
-
-    // remove ability to add again immediately
-    playerGrid.classList.add('grid-disabled')
-    
     // console.log(playerShips[shipCount])
-
   }
 
   // this function resets the check for validation as the mouse moves out from the selected playerCells
   function removePosition(){
-    playerGrid.classList.remove('grid-disabled')
-    playerCells.forEach(cell => cell.classList.remove('validSelection'))
+    console.log(gameStarted, playersTurn, endGameWinner)
+    // if (gameStarted === true && playersTurn === false){
+    if (deployed !== true){
+      playerGrid.classList.remove('grid-disabled')
+      playerCells.forEach(cell => cell.classList.remove('validSelection'))
+    }
   }
 
   function rotateShip(e){
@@ -399,6 +402,7 @@ function init() {
   // triggered once ships have been set (and validated), game is ready to start
   function playerIsReady() {
     playersTurn = true
+    deployed = true
     playerGrid.classList.add('grid-disabled')
     computerGrid.classList.remove('grid-disabled')
     playerSpan.innerText = '"TRUMP: GREAT JOB. Now go kick some Commie ass"'
@@ -409,8 +413,9 @@ function init() {
 
   // triggered once it is player's turn + clicked on computer grid
   function playerTurn(e) {
-    
-    if (endGameWinner === 'none'){
+    console.log(playersTurn, endGameWinner)
+    playerGrid.classList.add('grid-disabled')
+    if (endGameWinner === 'none' && playersTurn === true){
       // capture the cell that has clicked on
       const cellFire = parseInt(e.target.dataset.index)
       computerGrid.classList.add('grid-disabled')
@@ -435,41 +440,7 @@ function init() {
 
     }
     // console.log('Array of attempted shots ->', attemptedShots)
-  }  
-
-  // THIS VERSION WORKS! BACKUP
-  // function that randomly generates computer's turn.  It will call fireShot
-  // function computerTurn() {
-    
-  //   if (endGameWinner === 'none'){
-  //     computerSpan.innerText = 'KIM: Haha my go now...'
-  //     let randomCell = pickRandomCellNumber()
-  //     setTimeout(() => {
-        
-  //       // if attemptedShot array does NOT already contain random cell, push to attemptedShots array to record shot
-  //       // then trigger the fireShot function
-  //       if (!attemptedShotsCPU.includes(randomCell)) {
-  //         attemptedShotsCPU.push(randomCell)
-  //         fireShot('computer', randomCell)
-    
-  //         // now set to players turn
-  //         playersTurn = true
-  //         // console.log('Not included in attemptedShotsCPU ->', attemptedShotsCPU)
-  //       } else {
-  //         while (attemptedShotsCPU.includes(randomCell)) {
-  //           // console.log('FAILED attemptedShotsCPU ->', randomCell)
-  //           randomCell = pickRandomCellNumber()
-  //         }
-  //         attemptedShotsCPU.push(randomCell)
-  //         fireShot('computer', randomCell)
-  //         // computerSpan.innerText = randomCell
-  //         // console.log('INCLUDED in attemptedShotsCPU ->', attemptedShotsCPU)
-  //       }
-
-  //       playerSpan.innerText = 'TRUMP: Our time to shine...'
-  //     }, '1500')
-  //   }
-  // }
+  }
 
   function computerTurn() {
     
@@ -491,6 +462,7 @@ function init() {
         // computerGrid.classList.add('grid-disabled')
         // if attemptedShot array does NOT already contain random cell, push to attemptedShots array to record shot
         // then trigger the fireShot function
+        // playerGrid.classList.add('grid-disabled')
         if (!attemptedShotsCPU.includes(cellChosen)) {
           attemptedShotsCPU.push(cellChosen)
           fireShot('computer', cellChosen)
@@ -505,6 +477,7 @@ function init() {
           }
           attemptedShotsCPU.push(cellChosen)
           fireShot('computer', cellChosen)
+          playersTurn = true
           // computerGrid.classList.remove('grid-disabled')
           // computerSpan.innerText = randomCell
           // console.log('INCLUDED in attemptedShotsCPU ->', attemptedShotsCPU)
@@ -515,7 +488,7 @@ function init() {
           playerSpan.innerText = 'TRUMP: Our time to shine...'
         }
       }, '1500')
-      
+      // playerGrid.classList.remove('grid-disabled')
     }
   }
 
@@ -579,9 +552,11 @@ function init() {
         if (user === 'player'){
           playerSpan.innerText = `TRUMP: GO TEAM AMERICA! We sunk his ${locateShip.name}`
           computerCells[cellFire].classList.add('shotHit')
+          updateScore(computerShips, cpuScoreSpan)
         } else {
           computerSpan.innerText = `KIM: Hope u not miss ur ${locateShip.name} LOL`
           playerCells[cellFire].classList.add('shotHit')
+          updateScore(playerShips, playerScoreSpan)
           computerLastHunt = null
         }
         checkEndGame(user)
@@ -603,6 +578,16 @@ function init() {
     // console.log('Computer Ships ->', computerShips)
     // console.log('Player Ships ->', playerShips)
 
+  }
+
+  function updateScore(ships, span) {
+    const shipsLeft = ships.filter(ship => ship.health !== 0).length
+    console.log(ships, span)
+    if (span === playerScoreSpan){
+      span.innerText = 'YOU ' + '🚢 '.repeat(shipsLeft)
+    } else {
+      span.innerText = 'CPU ' + '🚢 '.repeat(shipsLeft)
+    }
   }
 
   // check game status: whether anyone has won yet
@@ -665,7 +650,6 @@ function init() {
     })
   }
 
-  // not MVP
   function resetGame() {
 
     // resetting Ships objects (there is a better way of reusable code here but NO time!)
@@ -693,6 +677,8 @@ function init() {
     playerGrid.style.animation = 'animate 60s linear infinite'
     computerGrid.style.backgroundImage = "url('assets/sea.jpeg')"
     computerGrid.style.animation = 'animate 60s linear infinite'
+    updateScore(playerShips, playerScoreSpan)
+    updateScore(computerShips, cpuScoreSpan)
 
     // resetting variables back to first counts
     shipSelectedSize = playerShips[0].size
@@ -705,6 +691,7 @@ function init() {
     // resetting game switches
     playersTurn = false
     endGameWinner = 'none'
+    deployed = false
 
     playerGrid.classList.remove('grid-disabled')
 

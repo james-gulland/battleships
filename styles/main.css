@@ -70,6 +70,10 @@ h1 {
   margin-left: 15px;
 }
 
+span {
+  font-size: 20px;
+}
+
 .grid {
   align-items: center;
   /* box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2); */
@@ -86,7 +90,7 @@ h1 {
   /* background-repeat: no-repeat; */
   background-position: center;
   background-size: cover;
-  animation: animate 60s linear infinite;
+  animation: animate 100s linear infinite;
 }
 
 @keyframes animate{
