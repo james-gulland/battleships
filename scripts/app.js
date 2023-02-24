@@ -77,7 +77,7 @@ function init() {
     setTimeout(() => {
       playerSpan.innerText = '"TRUMP: Use LEFT or RIGHT arrow keys to rotate"'
       computerSpan.innerText = '"KIM: u too fat to rotate LMFAO"'
-    }, '4000')
+    }, '5000')
 
     playerSpan.innerText = '"TRUMP: OK patriots, time to deploy the ships!"'
     computerSpan.innerText = '"KIM: I deployed mine already NOOB LOL"'
@@ -399,7 +399,7 @@ function init() {
     deployed = true
     playerGrid.classList.add('grid-disabled')
     computerGrid.classList.remove('grid-disabled')
-    playerSpan.innerText = '"TRUMP: GREAT JOB. Now go kick some Commie ass"'
+    playerSpan.innerText = '"TRUMP: GREAT JOB. Now go kick some royal ass"'
     computerSpan.innerText = '"KIM: Come at me BRO bwhahaha"'
 
     setTimeout(() => {
