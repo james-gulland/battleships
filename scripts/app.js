@@ -533,12 +533,10 @@ function init() {
       if (locateShip.health > 1) {
         locateShip.health--
         if (user === 'player'){
-          // playerSpan.innerText = `hit! ${cellFire}`
           playerSpan.innerText = 'TRUMP: HIT! He really felt that one!!'
           computerCells[cellFire].classList.add('shotHit')
           playAudio('hit')
         } else {
-          // computerSpan.innerText = `hit! ${cellFire}`
           computerSpan.innerText = 'KIM: HIT! LOL who is ur daddy now!!'
           playerCells[cellFire].classList.add('shotHit')
           playAudio('hit')

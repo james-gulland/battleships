@@ -1,6 +1,5 @@
 Battleships plan
-
-<h1>Battleships WW3 game</h1>
+<h1>Battleships game</h1>
 <h2>Vision</h2>
 
 - WW3 style battleship game, with a bit of humour.  
