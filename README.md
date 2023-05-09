@@ -38,5 +38,18 @@ Step 1: The Plan
 
 I devised an initial plan in a readme file, with a clear understanding in the vision/concept of the game, the rules and requirements, terminology to use (which will affect how I define the variables), MVP features and post-MVP features (nice-to-have if I have the time).
 
+![image](https://res.cloudinary.com/drrscrxod/image/upload/v1683626588/battleships-brief_yqp9m7.png)
+
+Step 2: The Wireframe
+
+Creation of wireframe based on the above vision, rules, and requirements, at a high-level - which would help define the HTML structure of the page and some of the play mechanics.
+
+![image](https://res.cloudinary.com/drrscrxod/image/upload/v1683626588/battleships-wireframe_ewjgq2.png)
+
+Step 3: The Pseudo Code
+
+Pseudo code out all necessary elements and global variables, all the events and functions required to do the job, and the execution processes, such as page load and clicking of buttons.  
+
+I knew this was likely to change as I started developing the game, but it was useful to map things out initially in my brain, in terms of what reusable functions I might need, how to name variables in line with the terminology defined in the planning process, and how everything was going to link together.
 
 
