@@ -7,7 +7,6 @@ The first GA Software Engineering immersive course project was in week 4 of the 
 
 https://james-gulland.github.io/battleships/ 
 
-<!-- ![image](https://res.cloudinary.com/drrscrxod/image/upload/v1683626033/battleships-2_tqachn.png) -->
 ![My Image](assets/image16.gif)
 
 <h3>Timeframe & Working Team</h3>
@@ -39,13 +38,13 @@ Once planning had been signed off by the instructor team, we then went about cod
 
 I devised an initial plan in a readme file, with a clear understanding in the vision/concept of the game, the rules and requirements, terminology to use (which will affect how I define the variables), MVP features and post-MVP features (nice-to-have if I have the time).
 
-![image](https://res.cloudinary.com/drrscrxod/image/upload/v1683626588/battleships-brief_yqp9m7.png)
+![My Image](assets/image12.png)
 
 <b>Step 2: The Wireframe</b>
 
 Creation of wireframe based on the above vision, rules, and requirements, at a high-level - which would help define the HTML structure of the page and some of the play mechanics.
 
-![image](https://res.cloudinary.com/drrscrxod/image/upload/v1683626588/battleships-wireframe_ewjgq2.png)
+![My Image](assets/image1.png)
 
 <b>Step 3: The Pseudo Code</b>
 
@@ -59,9 +58,15 @@ Step 1: Develop a mock game ‘playground’ to experiment with functionality
 
 Initially, I didn’t want to create all the HTML structure and perfect the CSS upfront; I just wanted to create a ‘playground’ area so that I could tackle the hardest problems first.  I did this by automatically generating a couple of grids using a ‘createGrid’ function; one for the player and one for the computer.  This function was a reusable component for both instances, and generated a 10x10 grid, which are the official board sizes defined by Hasbro.  I put the indexes as inner text so I could debug easily.
 
-(image)
+![My Image](assets/image15.png)
+
+![My Image](assets/image8.png)
 
 I also defined some of the key global variables and objects in order to generate the basics of the game mechanics, such as the player and computer ships objects, that could be reused throughout the codebase:
+
+![My Image](assets/image9.png)
+
+It is also worth noting at this point that I was only focusing on MVP features at this point, and putting anything related to post-MVP was on the backburner.  I know what I wanted to achieve, so I could think about it when creating the initial building blocks, but also not get bogged down by the wealth of things I needed to do at this point, and to not be too hard on myself.
 
 
 
