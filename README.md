@@ -6,3 +6,5 @@ The first GA Software Engineering immersive course project was in week 4 of the 
 <h2>Deployment link:</h2>
 
 https://james-gulland.github.io/battleships/ 
+
+<img>https://res.cloudinary.com/drrscrxod/image/upload/v1683625881/battleships_ip8hbl.png</img>
