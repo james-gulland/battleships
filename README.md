@@ -124,7 +124,7 @@ When I was happy with the MVP and post-MVP features, I then focused on NOT addin
 
 Had a LOT of fun with this, and I expect to build upon it, and improve it, post the course.
 
-<h3>Challenges</h3>
+<h2>Challenges</h2>
 
 1st challenge: developing the validation on making sure ships were valid positions on the grid + not overlapping, especially when randomly generating the positions for the computer ships.  There was a fair amount of complexity involved in getting this working, but the secret was to console log each step as you go to debug as much as possible, so it was possible to understand deeply what was going on.
 
@@ -132,7 +132,7 @@ Had a LOT of fun with this, and I expect to build upon it, and improve it, post 
 
 3rd challenge:  the game had a few game states, i.e. game has not started, player’s turn to shoot, player has deployed ships etc, and I ran into quite a few issues in edge cases where it was possible to click on the player grid when it is not the correct state to start accepting deploying ships etc.  Again, lots of debugging and testing all scenarios, trying to break things as much as possible, helped in fixing.  Also, stepping back from the code and mapping down the flow on a bit of paper helped visualise the problem better too.
 
-<h3>Wins</h3>
+<h2>Wins</h2>
 
 I got the MVP working relatively quickly, managed to complete extended post-MVP items, despite Battleships being one of the hardest games to choose.  It was very satisfying completing a tough challenge.  It got a great reception when I presented back to the group, and lots of feedback from fellow students saying how much they enjoyed it!  
 
@@ -142,7 +142,7 @@ I completed well within time, giving time to refine and test it out, which meant
 
 CSS did not take a lot of time, I spent 90% of my time on JavaScript logic.  I learnt a lot about reusing functions within the codebase and commenting on code to help reference what I was doing.  It was also great spending more time attempting to use the various types of JS array methods instead of sticking to ‘for’ loops that I was comfortable with.
 
-<h3>Key Learnings</h3>
+<h2>Key Learnings</h2>
 
 I feel a lot more confident with JavaScript in general after this project, especially reusing functions (which I had limited prior experience with) and using methods effectively (instead of using ‘for’ loops).  
 
@@ -152,13 +152,13 @@ I also got a chance to expand experience with using CSS; using properties for an
 
 I was also using git multiple times a day to push changes as I went; which gave me more exposure to the CLI and version controlling.
 
-<h3>Bugs</h3>
+<h2>Bugs</h2>
 
 The game is actually pretty stable in general, mainly because I had plenty of time to test and squash bugs towards the end of the project deadline.  
 
 One known bug is when deploying ships - if you click very quickly it somehow manages to skip the validation which results in an issue in defining the location of the player ships.  This is very much an edge case, but I would like to mitigate against it anyway.
 
-<h3>Future Improvements</h3>
+<h2>Future Improvements</h2>
 
 1) Improve the intelligence of the hunting function for the computer turn, so that it is capable of sinking an entire ship without missing shots.
 2) Refactor some of the validation logic; making it more reusable within the codebase and make it more efficient, which in turn will help to mitigate against the bug listed above.
